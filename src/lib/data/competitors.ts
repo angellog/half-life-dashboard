@@ -1,0 +1,213 @@
+import { Competitor } from "@/types";
+
+export const competitors: Competitor[] = [
+  {
+    id: "comp-1",
+    handle: "@kicksonfire",
+    platform: "instagram",
+    displayName: "Kicks On Fire",
+    followers: 3200000,
+    avgLikes: 45200,
+    avgComments: 1890,
+    postingFrequency: "3x daily",
+    growthRate: 2.4,
+    growthHistory: [
+      { date: "2026-02-01", followers: 3020000 },
+      { date: "2026-03-01", followers: 3080000 },
+      { date: "2026-04-01", followers: 3150000 },
+      { date: "2026-05-01", followers: 3200000 },
+    ],
+    topPosts: [
+      { caption: "Nike Dunk Low 'Panda' restock confirmed for next week", likes: 89400, comments: 3420, date: "2026-04-20" },
+      { caption: "Travis Scott x Jordan Brand — new silhouette leak", likes: 76800, comments: 4100, date: "2026-04-15" },
+      { caption: "Rate this collection 1-10", likes: 67200, comments: 5600, date: "2026-04-10" },
+    ],
+    promotedPostAnalysis: {
+      estimatedReach: 850000,
+      engagementOnAds: 3.2,
+      audienceDemographics: "Male 18-34, US/UK primary, sneaker enthusiasts",
+    },
+  },
+  {
+    id: "comp-2",
+    handle: "@sneakernews",
+    platform: "instagram",
+    displayName: "Sneaker News",
+    followers: 5800000,
+    avgLikes: 62100,
+    avgComments: 2340,
+    postingFrequency: "5x daily",
+    growthRate: 1.8,
+    growthHistory: [
+      { date: "2026-02-01", followers: 5550000 },
+      { date: "2026-03-01", followers: 5620000 },
+      { date: "2026-04-01", followers: 5710000 },
+      { date: "2026-05-01", followers: 5800000 },
+    ],
+    topPosts: [
+      { caption: "BREAKING: Nike x Off-White collab returns for 2026", likes: 134000, comments: 6780, date: "2026-04-18" },
+      { caption: "Yeezy Boost 350 V3 first look leaked images", likes: 112000, comments: 5400, date: "2026-04-12" },
+      { caption: "Air Jordan 4 'Military Blue' official images", likes: 98700, comments: 3200, date: "2026-04-08" },
+    ],
+    promotedPostAnalysis: {
+      estimatedReach: 1200000,
+      engagementOnAds: 2.8,
+      audienceDemographics: "Male 16-30, Global reach, hypebeasts",
+    },
+  },
+  {
+    id: "comp-3",
+    handle: "@hypebeast",
+    platform: "instagram",
+    displayName: "HYPEBEAST",
+    followers: 12400000,
+    avgLikes: 89500,
+    avgComments: 3100,
+    postingFrequency: "8x daily",
+    growthRate: 1.2,
+    growthHistory: [
+      { date: "2026-02-01", followers: 11900000 },
+      { date: "2026-03-01", followers: 12050000 },
+      { date: "2026-04-01", followers: 12200000 },
+      { date: "2026-05-01", followers: 12400000 },
+    ],
+    topPosts: [
+      { caption: "Supreme x Louis Vuitton rumored for Fall 2026", likes: 245000, comments: 12300, date: "2026-04-22" },
+      { caption: "The best sneaker collaborations of 2026 so far", likes: 189000, comments: 7600, date: "2026-04-16" },
+      { caption: "Stüssy x Nike Air Force 1 official release date", likes: 167000, comments: 5400, date: "2026-04-09" },
+    ],
+    promotedPostAnalysis: {
+      estimatedReach: 3500000,
+      engagementOnAds: 2.1,
+      audienceDemographics: "Male/Female 18-35, Global, fashion-forward consumers",
+    },
+  },
+  {
+    id: "comp-4",
+    handle: "@complexsneakers",
+    platform: "instagram",
+    displayName: "Complex Sneakers",
+    followers: 4100000,
+    avgLikes: 38900,
+    avgComments: 1560,
+    postingFrequency: "4x daily",
+    growthRate: 1.5,
+    growthHistory: [
+      { date: "2026-02-01", followers: 3920000 },
+      { date: "2026-03-01", followers: 3980000 },
+      { date: "2026-04-01", followers: 4040000 },
+      { date: "2026-05-01", followers: 4100000 },
+    ],
+    topPosts: [
+      { caption: "Sneaker of the Year bracket starts NOW", likes: 72300, comments: 8900, date: "2026-04-21" },
+      { caption: "A$AP Rocky x Puma collab dropping this month", likes: 56700, comments: 2340, date: "2026-04-14" },
+      { caption: "Best GR sneakers you can still buy right now", likes: 48900, comments: 3100, date: "2026-04-07" },
+    ],
+    promotedPostAnalysis: {
+      estimatedReach: 950000,
+      engagementOnAds: 2.9,
+      audienceDemographics: "Male 18-30, US primary, sneaker collectors",
+    },
+  },
+  {
+    id: "comp-5",
+    handle: "@nicekicks",
+    platform: "instagram",
+    displayName: "Nice Kicks",
+    followers: 2800000,
+    avgLikes: 29400,
+    avgComments: 980,
+    postingFrequency: "3x daily",
+    growthRate: 2.1,
+    growthHistory: [
+      { date: "2026-02-01", followers: 2650000 },
+      { date: "2026-03-01", followers: 2700000 },
+      { date: "2026-04-01", followers: 2750000 },
+      { date: "2026-05-01", followers: 2800000 },
+    ],
+    topPosts: [
+      { caption: "Nike SB Dunk Low 'Concepts' restocking at select retailers", likes: 54200, comments: 2100, date: "2026-04-19" },
+      { caption: "Custom Air Force 1 tutorial — step by step", likes: 43800, comments: 1780, date: "2026-04-13" },
+      { caption: "Sneaker storage goals. Tag someone who needs this", likes: 38100, comments: 2400, date: "2026-04-06" },
+    ],
+  },
+  {
+    id: "comp-6",
+    handle: "@solecollector",
+    platform: "instagram",
+    displayName: "Sole Collector",
+    followers: 2100000,
+    avgLikes: 22800,
+    avgComments: 760,
+    postingFrequency: "2x daily",
+    growthRate: 1.3,
+    growthHistory: [
+      { date: "2026-02-01", followers: 2010000 },
+      { date: "2026-03-01", followers: 2040000 },
+      { date: "2026-04-01", followers: 2070000 },
+      { date: "2026-05-01", followers: 2100000 },
+    ],
+    topPosts: [
+      { caption: "Every Jordan releasing in May 2026 — full calendar", likes: 41200, comments: 1900, date: "2026-04-25" },
+      { caption: "The 50 greatest Air Jordans of all time, ranked", likes: 38900, comments: 4500, date: "2026-04-17" },
+      { caption: "Nike Kobe 8 Protro releasing in new colorways", likes: 34600, comments: 1200, date: "2026-04-11" },
+    ],
+  },
+  {
+    id: "comp-7",
+    handle: "@highsnobiety",
+    platform: "instagram",
+    displayName: "Highsnobiety",
+    followers: 4600000,
+    avgLikes: 35200,
+    avgComments: 1240,
+    postingFrequency: "6x daily",
+    growthRate: 0.9,
+    growthHistory: [
+      { date: "2026-02-01", followers: 4450000 },
+      { date: "2026-03-01", followers: 4500000 },
+      { date: "2026-04-01", followers: 4550000 },
+      { date: "2026-05-01", followers: 4600000 },
+    ],
+    topPosts: [
+      { caption: "The rise of quiet luxury in streetwear", likes: 67800, comments: 2340, date: "2026-04-23" },
+      { caption: "Rick Owens x Dr. Martens just dropped and it's insane", likes: 58900, comments: 3100, date: "2026-04-16" },
+      { caption: "Best dressed at Paris Fashion Week 2026", likes: 52300, comments: 1800, date: "2026-04-05" },
+    ],
+    promotedPostAnalysis: {
+      estimatedReach: 1100000,
+      engagementOnAds: 2.4,
+      audienceDemographics: "Male/Female 20-35, Europe/US, fashion-conscious",
+    },
+  },
+  {
+    id: "comp-8",
+    handle: "@sneakerfreaker",
+    platform: "instagram",
+    displayName: "Sneaker Freaker",
+    followers: 1900000,
+    avgLikes: 18700,
+    avgComments: 620,
+    postingFrequency: "2x daily",
+    growthRate: 1.7,
+    growthHistory: [
+      { date: "2026-02-01", followers: 1810000 },
+      { date: "2026-03-01", followers: 1840000 },
+      { date: "2026-04-01", followers: 1870000 },
+      { date: "2026-05-01", followers: 1900000 },
+    ],
+    topPosts: [
+      { caption: "ASICS Gel-Lyte III 'Salmon Toe' making a comeback", likes: 34500, comments: 1560, date: "2026-04-24" },
+      { caption: "The most underrated sneakers of 2026", likes: 29800, comments: 2100, date: "2026-04-18" },
+      { caption: "Saucony x Feature 'Living Fossil' first look", likes: 24300, comments: 890, date: "2026-04-10" },
+    ],
+  },
+];
+
+export function getCompetitors(): Competitor[] {
+  return competitors;
+}
+
+export function getCompetitorById(id: string): Competitor | undefined {
+  return competitors.find((c) => c.id === id);
+}
