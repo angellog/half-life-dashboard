@@ -1,16 +1,24 @@
-import { openai } from "@ai-sdk/openai";
+import { createOpenAI } from "@ai-sdk/openai";
 import { streamText, tool } from "ai";
 import { z } from "zod";
 import { SYSTEM_PROMPT } from "@/lib/ai/brand-logic";
 
-// Allow streaming responses up to 30 seconds
+// Initialize the Fireworks AI provider (OpenAI compatible)
+const fireworks = createOpenAI({
+  apiKey: process.env.FIREWORKS_API_KEY || "",
+  baseURL: "https://api.fireworks.ai/inference/v1",
+});
+
+// Default model if not specified in environment
+const MODEL_ID = process.env.FIREWORKS_MODEL_ID || "accounts/fireworks/models/glm-4";
+
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
   const { messages } = await req.json();
 
   const result = await streamText({
-    model: openai("gpt-4o"),
+    model: fireworks(MODEL_ID),
     system: SYSTEM_PROMPT,
     messages,
     tools: {
