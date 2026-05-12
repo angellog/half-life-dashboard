@@ -35,6 +35,7 @@ import type { ChatHistoryMessage, ToolCallInfo } from "@/types/openclaw";
 import { getSampleConversation, getSuggestedPrompts } from "@/lib/data/ai-agent";
 import { getSettings, saveSettings, clearSettings } from "@/lib/openclaw/settings";
 import { useOpenClaw } from "@/hooks/useOpenClaw";
+import { useNativeAI } from "@/hooks/useNativeAI";
 import { ToolCallCard } from "@/components/shared/ToolCallCard";
 import { cn } from "@/lib/utils";
 
@@ -45,35 +46,46 @@ import { cn } from "@/lib/utils";
 function ChatBubble({
   role,
   content,
+  tool_calls,
 }: {
   role: "user" | "assistant" | "system" | "tool";
   content: string;
+  tool_calls?: ToolCallInfo[];
 }) {
   const isUser = role === "user";
   if (role === "system" || role === "tool") return null;
 
   return (
-    <div className={cn("flex gap-3", isUser ? "flex-row-reverse" : "flex-row")}>
-      <div
-        className={cn(
-          "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold",
-          isUser
-            ? "bg-primary text-primary-foreground"
-            : "bg-violet-500/20 text-violet-400"
-        )}
-      >
-        {isUser ? "U" : <Bot className="h-4 w-4" />}
+    <div className="space-y-2">
+      <div className={cn("flex gap-3", isUser ? "flex-row-reverse" : "flex-row")}>
+        <div
+          className={cn(
+            "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold",
+            isUser
+              ? "bg-primary text-primary-foreground"
+              : "bg-violet-500/20 text-violet-400"
+          )}
+        >
+          {isUser ? "U" : <Bot className="h-4 w-4" />}
+        </div>
+        <div
+          className={cn(
+            "rounded-2xl px-4 py-3 text-sm max-w-[85%] leading-relaxed whitespace-pre-wrap",
+            isUser
+              ? "bg-primary text-primary-foreground rounded-tr-md"
+              : "bg-accent rounded-tl-md"
+          )}
+        >
+          {content}
+        </div>
       </div>
-      <div
-        className={cn(
-          "rounded-2xl px-4 py-3 text-sm max-w-[85%] leading-relaxed whitespace-pre-wrap",
-          isUser
-            ? "bg-primary text-primary-foreground rounded-tr-md"
-            : "bg-accent rounded-tl-md"
-        )}
-      >
-        {content}
-      </div>
+      {tool_calls && tool_calls.length > 0 && (
+        <div className="pl-11 space-y-2">
+          {tool_calls.map((tool) => (
+            <ToolCallCard key={tool.id} tool={tool} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -129,6 +141,8 @@ function SettingsDialog({
   onDisconnect,
   isConnected,
   isConnecting,
+  mode,
+  onModeChange,
 }: {
   open: boolean;
   onClose: () => void;
@@ -136,6 +150,8 @@ function SettingsDialog({
   onDisconnect: () => void;
   isConnected: boolean;
   isConnecting: boolean;
+  mode: "gateway" | "native";
+  onModeChange: (mode: "gateway" | "native") => void;
 }) {
   const settings = getSettings();
   const [url, setUrl] = useState(settings.gatewayUrl);
@@ -147,48 +163,21 @@ function SettingsDialog({
   if (!open) return null;
 
   async function handleConnect() {
+    if (mode === "native") {
+      onModeChange("native");
+      saveSettings({ mode: "native" });
+      onClose();
+      return;
+    }
+
     setConnectError(null);
     try {
       await onConnect(url, token);
+      saveSettings({ mode: "gateway" });
       onClose();
     } catch (err) {
       setConnectError(err instanceof Error ? err.message : String(err));
     }
-  }
-
-  async function handleTest() {
-    setTesting(true);
-    setTestResult(null);
-    try {
-      // Quick connectivity test — try to open a WebSocket
-      const ws = new WebSocket(url);
-      const result = await new Promise<string>((resolve) => {
-        const timeout = setTimeout(() => {
-          ws.close();
-          resolve("Timeout — Gateway did not respond within 5 seconds");
-        }, 5000);
-        ws.onopen = () => {
-          clearTimeout(timeout);
-          ws.close();
-          resolve("Gateway is reachable");
-        };
-        ws.onerror = () => {
-          clearTimeout(timeout);
-          resolve("Cannot reach Gateway — check the URL and ensure it is running");
-        };
-      });
-      setTestResult(result);
-    } catch {
-      setTestResult("Connection test failed");
-    } finally {
-      setTesting(false);
-    }
-  }
-
-  function handleDisconnect() {
-    onDisconnect();
-    clearSettings();
-    onClose();
   }
 
   return (
@@ -198,7 +187,7 @@ function SettingsDialog({
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">
           <div className="flex items-center gap-2">
             <Settings className="h-4 w-4 text-muted-foreground" />
-            <h3 className="font-semibold text-sm">Gateway Connection</h3>
+            <h3 className="font-semibold text-sm">AI Configuration</h3>
           </div>
           <button
             onClick={onClose}
@@ -211,38 +200,73 @@ function SettingsDialog({
         {/* Body */}
         <div className="p-5 space-y-4">
           <div>
-            <label className="text-xs font-medium text-muted-foreground block mb-1.5">
-              Gateway URL
+            <label className="text-xs font-medium text-muted-foreground block mb-2">
+              Operation Mode
             </label>
-            <Input
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="ws://127.0.0.1:18789"
-              className="font-mono text-xs"
-            />
-            <p className="text-[10px] text-muted-foreground mt-1">
-              Default: ws://127.0.0.1:18789 — or wss:// for remote servers
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => onModeChange("native")}
+                className={cn(
+                  "flex flex-col items-center gap-2 p-3 rounded-lg border text-center transition-colors",
+                  mode === "native"
+                    ? "bg-violet-500/10 border-violet-500 text-violet-400"
+                    : "bg-accent/50 border-border text-muted-foreground hover:border-muted-foreground"
+                )}
+              >
+                <Zap className="h-4 w-4" />
+                <div className="text-[10px] font-semibold">Dashboard Native</div>
+              </button>
+              <button
+                onClick={() => onModeChange("gateway")}
+                className={cn(
+                  "flex flex-col items-center gap-2 p-3 rounded-lg border text-center transition-colors",
+                  mode === "gateway"
+                    ? "bg-violet-500/10 border-violet-500 text-violet-400"
+                    : "bg-accent/50 border-border text-muted-foreground hover:border-muted-foreground"
+                )}
+              >
+                <Wifi className="h-4 w-4" />
+                <div className="text-[10px] font-semibold">Local Gateway</div>
+              </button>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-2">
+              {mode === "native" 
+                ? "Runs AI directly in the dashboard. Always online, zero setup required."
+                : "Connects to your local OpenClaw Gateway for maximum control."}
             </p>
           </div>
 
-          <div>
-            <label className="text-xs font-medium text-muted-foreground block mb-1.5">
-              Auth Token
-            </label>
-            <Input
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              type="password"
-              placeholder="Gateway auth token (if configured)"
-              className="font-mono text-xs"
-            />
-            <p className="text-[10px] text-muted-foreground mt-1">
-              Found in ~/.openclaw/openclaw.json under gateway.auth.token
-            </p>
-          </div>
+          {mode === "gateway" && (
+            <>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground block mb-1.5">
+                  Gateway URL
+                </label>
+                <Input
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder="ws://127.0.0.1:18789"
+                  className="font-mono text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-medium text-muted-foreground block mb-1.5">
+                  Auth Token
+                </label>
+                <Input
+                  value={token}
+                  onChange={(e) => setToken(e.target.value)}
+                  type="password"
+                  placeholder="Gateway auth token"
+                  className="font-mono text-xs"
+                />
+              </div>
+            </>
+          )}
 
           {/* Test result */}
-          {testResult && (
+          {mode === "gateway" && testResult && (
             <div
               className={cn(
                 "text-xs rounded-lg px-3 py-2",
@@ -264,24 +288,26 @@ function SettingsDialog({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-5 py-4 border-t border-border gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleTest}
-            disabled={testing || !url}
-            className="gap-1.5 text-xs"
-          >
-            {testing ? (
-              <Loader2 className="h-3 w-3 animate-spin" />
-            ) : (
-              <Wifi className="h-3 w-3" />
-            )}
-            Test
-          </Button>
+        <div className="flex items-center justify-end px-5 py-4 border-t border-border gap-2">
+          {mode === "gateway" && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleTest}
+              disabled={testing || !url}
+              className="gap-1.5 text-xs mr-auto"
+            >
+              {testing ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <Wifi className="h-3 w-3" />
+              )}
+              Test
+            </Button>
+          )}
 
           <div className="flex gap-2">
-            {isConnected && (
+            {isConnected && mode === "gateway" && (
               <Button
                 variant="outline"
                 size="sm"
@@ -295,15 +321,15 @@ function SettingsDialog({
             <Button
               size="sm"
               onClick={handleConnect}
-              disabled={!url || isConnecting}
+              disabled={mode === "gateway" && (!url || isConnecting)}
               className="gap-1.5 text-xs bg-violet-600 hover:bg-violet-700"
             >
               {isConnecting ? (
                 <Loader2 className="h-3 w-3 animate-spin" />
               ) : (
-                <Wifi className="h-3 w-3" />
+                <Check className="h-3 w-3" />
               )}
-              {isConnected ? "Reconnect" : "Connect"}
+              {mode === "native" ? "Save Settings" : isConnected ? "Reconnect" : "Connect"}
             </Button>
           </div>
         </div>
@@ -317,6 +343,13 @@ function SettingsDialog({
 // ================================================================
 
 function LiveChatInterface() {
+  const [mode, setMode] = useState<"gateway" | "native">(getSettings().mode || "native");
+  
+  const gatewayApi = useOpenClaw();
+  const nativeApi = useNativeAI();
+
+  const api = mode === "native" ? nativeApi : gatewayApi;
+
   const {
     status,
     error,
@@ -331,7 +364,7 @@ function LiveChatInterface() {
     newSession,
     memoryStatus,
     serverVersion,
-  } = useOpenClaw();
+  } = api;
 
   const [input, setInput] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -346,6 +379,253 @@ function LiveChatInterface() {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
+  }, [messages, streamingText, activeToolCalls, isStreaming]);
+
+  function handleSend() {
+    if (!input.trim() || !isConnected) return;
+    sendMessage(input.trim());
+    setInput("");
+  }
+
+  function handlePromptClick(prompt: string) {
+    if (isConnected) {
+      sendMessage(prompt);
+    } else {
+      setInput(prompt);
+    }
+  }
+
+  function handleModeChange(newMode: "gateway" | "native") {
+    setMode(newMode);
+    saveSettings({ mode: newMode });
+  }
+
+  return (
+    <div className="flex flex-col h-[calc(100vh-220px)] max-h-[700px]">
+      {/* Chat header */}
+      <div className="flex items-center gap-3 pb-4 border-b border-border">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-500/20">
+          <Bot className="h-5 w-5 text-violet-400" />
+        </div>
+        <div>
+          <div className="flex items-center gap-2">
+            <h3 className="font-semibold text-sm">OpenClaw Pro</h3>
+            <Badge className={cn(
+              "border-0 text-[10px]",
+              mode === "native" ? "bg-emerald-500/20 text-emerald-400" : "bg-violet-500/20 text-violet-400"
+            )}>
+              {mode === "native" ? "Integrated" : isConnected ? "Live" : "Offline"}
+            </Badge>
+            {serverVersion && (
+              <span className="text-[10px] text-muted-foreground">
+                v{serverVersion}
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {mode === "native" 
+              ? "Running natively in dashboard"
+              : isConnected
+                ? "Connected to OpenClaw Gateway"
+                : "Not connected — configure Gateway to enable AI"}
+          </p>
+        </div>
+        <div className="ml-auto flex items-center gap-3">
+          {/* Memory status */}
+          {isConnected && memoryStatus && (
+            <div className="flex items-center gap-1.5">
+              <Brain className="h-3.5 w-3.5 text-muted-foreground" />
+              <span
+                className={cn(
+                  "text-[10px]",
+                  memoryStatus.available
+                    ? "text-green-400"
+                    : "text-muted-foreground"
+                )}
+              >
+                {memoryStatus.available ? (mode === "native" ? "Cloud Memory" : "Memory active") : "No memory"}
+              </span>
+            </div>
+          )}
+
+          {/* Connection indicator */}
+          <div className="flex items-center gap-1.5">
+            <div
+              className={cn(
+                "h-2 w-2 rounded-full",
+                isConnected
+                  ? "bg-green-400"
+                  : isConnecting
+                    ? "bg-amber-400 animate-pulse"
+                    : "bg-red-400"
+              )}
+            />
+            <span className="text-xs text-muted-foreground">
+              {isConnected
+                ? "Online"
+                : isConnecting
+                  ? "Connecting..."
+                  : "Offline"}
+            </span>
+          </div>
+
+          {/* Settings button */}
+          <button
+            onClick={() => setSettingsOpen(true)}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <Settings className="h-4 w-4" />
+          </button>
+
+          {/* New topic button */}
+          {isConnected && (
+            <button
+              onClick={newSession}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+              title="New Topic"
+            >
+              <Plus className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Connection banner (when disconnected) */}
+      {!isConnected && !isConnecting && mode === "gateway" && (
+        <div className="flex items-center gap-3 px-4 py-3 my-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
+          <AlertCircle className="h-4 w-4 text-amber-400 shrink-0" />
+          <div className="flex-1">
+            <p className="text-xs text-amber-300">
+              Connect to an OpenClaw Gateway for real AI-powered responses.
+            </p>
+            {error && (
+              <p className="text-[10px] text-amber-400/70 mt-0.5">{error}</p>
+            )}
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setSettingsOpen(true)}
+            className="text-xs shrink-0"
+          >
+            Configure
+          </Button>
+        </div>
+      )}
+
+      {/* Messages */}
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto py-4 space-y-4 scroll-smooth"
+      >
+        {/* Welcome message when empty and connected */}
+        {messages.length === 0 && isConnected && (
+          <div className="flex flex-col items-center justify-center h-full text-center py-12">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-violet-500/10 mb-4">
+              <Bot className="h-8 w-8 text-violet-400" />
+            </div>
+            <h3 className="text-lg font-semibold mb-1">
+              OpenClaw Pro is ready
+            </h3>
+            <p className="text-sm text-muted-foreground max-w-sm">
+              I&apos;m your AI business strategist for Half Life. Ask me about
+              content strategy, competitors, analytics, or anything else.
+            </p>
+          </div>
+        )}
+
+        {/* Chat history */}
+        {messages.map((msg, i) => (
+          <ChatBubble key={i} role={msg.role} content={msg.content} tool_calls={msg.tool_calls} />
+        ))}
+
+        {/* Active tool calls (Gateway mode only) */}
+        {mode === "gateway" && activeToolCalls.length > 0 && (
+          <div className="space-y-2 pl-11">
+            {activeToolCalls.map((tool) => (
+              <ToolCallCard key={tool.id} tool={tool} />
+            ))}
+          </div>
+        )}
+
+        {/* Streaming text (Gateway mode only) */}
+        {mode === "gateway" && streamingText && <StreamingBubble text={streamingText} />}
+
+        {/* Typing indicator */}
+        {isStreaming && mode === "gateway" && !streamingText && activeToolCalls.length === 0 && (
+          <TypingIndicator />
+        )}
+        
+        {isStreaming && mode === "native" && messages[messages.length-1]?.role !== "assistant" && (
+           <TypingIndicator />
+        )}
+      </div>
+
+      {/* Suggested prompts */}
+      {messages.length === 0 && (
+        <div className="pb-3">
+          <p className="text-xs text-muted-foreground mb-2">Try asking:</p>
+          <div className="flex flex-wrap gap-2">
+            {prompts[0].prompts.slice(0, 3).map((prompt) => (
+              <button
+                key={prompt}
+                onClick={() => handlePromptClick(prompt)}
+                className="text-xs bg-accent hover:bg-accent/80 rounded-full px-3 py-1.5 transition-colors text-muted-foreground hover:text-foreground"
+              >
+                {prompt}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Input */}
+      <div className="flex gap-2 pt-3 border-t border-border">
+        <Input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
+          placeholder={
+            isConnected
+              ? "Ask OpenClaw anything..."
+              : "Connect to Gateway to start chatting..."
+          }
+          disabled={!isConnected}
+          className="flex-1"
+        />
+        {isStreaming ? (
+          <Button
+            onClick={abort}
+            variant="outline"
+            className="gap-2 text-amber-400 border-amber-500/30 hover:bg-amber-500/10"
+          >
+            <Square className="h-3.5 w-3.5" />
+          </Button>
+        ) : (
+          <Button
+            onClick={handleSend}
+            disabled={!input.trim() || !isConnected}
+            className="bg-violet-600 hover:bg-violet-700 gap-2"
+          >
+            <Send className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
+
+      {/* Settings Dialog */}
+      <SettingsDialog
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        onConnect={connect}
+        onDisconnect={disconnect}
+        isConnected={isConnected}
+        isConnecting={isConnecting}
+        mode={mode}
+        onModeChange={handleModeChange}
+      />
+    </div>
+  );
+}
   }, [messages, streamingText, activeToolCalls, isStreaming]);
 
   function handleSend() {

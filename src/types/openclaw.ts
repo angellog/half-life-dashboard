@@ -14,6 +14,7 @@ export interface OpenClawSettings {
   gatewayUrl: string;
   authToken: string;
   activeSessionKey: string | null;
+  mode?: "gateway" | "native";
 }
 
 // --- Wire Protocol Frames ---
