@@ -57,18 +57,32 @@ const ORDER_STATUS_STYLES: Record<string, string> = {
   delivered: "bg-green-500/20 text-green-400",
 };
 
-function OrderFormDialog() {
+function OrderFormDialog({ trigger }: { trigger?: React.ReactElement }) {
   const [open, setOpen] = useState(false);
   const [addMetallic, setAddMetallic] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    business: "",
+    phone: "",
+    email: "",
+  });
+
+  const handleOrder = () => {
+    if (!formData.name || !formData.email) return;
+    alert(`Order placed successfully for ${formData.name}! Total: ${addMetallic ? 'UGX 135,000' : 'UGX 100,000'}`);
+    setOpen(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button className="gap-2">
-            <ShoppingCart className="h-4 w-4" />
-            Order Now
-          </Button>
+          trigger || (
+            <Button className="gap-2">
+              <ShoppingCart className="h-4 w-4" />
+              Order Now
+            </Button>
+          )
         }
       />
       <DialogContent className="sm:max-w-[500px]">
@@ -82,21 +96,42 @@ function OrderFormDialog() {
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label htmlFor="name">Full Name</Label>
-              <Input id="name" placeholder="John Doe" />
+              <Input 
+                id="name" 
+                placeholder="John Doe" 
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="business">Business Name</Label>
-              <Input id="business" placeholder="Your Brand" />
+              <Input 
+                id="business" 
+                placeholder="Your Brand" 
+                value={formData.business}
+                onChange={(e) => setFormData({ ...formData, business: e.target.value })}
+              />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label htmlFor="phone">Phone Number</Label>
-              <Input id="phone" placeholder="+256 7XX XXX XXX" />
+              <Input 
+                id="phone" 
+                placeholder="+256 7XX XXX XXX" 
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="you@email.com" />
+              <Input 
+                id="email" 
+                type="email" 
+                placeholder="you@email.com" 
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              />
             </div>
           </div>
           <Separator />
@@ -157,7 +192,7 @@ function OrderFormDialog() {
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={() => setOpen(false)}>Place Order</Button>
+          <Button onClick={handleOrder} disabled={!formData.name || !formData.email}>Place Order</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -362,12 +397,16 @@ export default function NFCStorePage() {
                     </li>
                   ))}
                 </ul>
-                <Button
-                  variant="outline"
-                  className="w-full border-amber-500/30 text-amber-400 hover:bg-amber-500/10"
-                >
-                  Add to Order
-                </Button>
+                <OrderFormDialog 
+                  trigger={
+                    <Button
+                      variant="outline"
+                      className="w-full border-amber-500/30 text-amber-400 hover:bg-amber-500/10"
+                    >
+                      Add to Order
+                    </Button>
+                  }
+                />
               </CardContent>
             </Card>
           </div>

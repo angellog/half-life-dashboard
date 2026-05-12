@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     tools: {
       getNFCPrice: tool({
         description: "Calculate the price of NFC cards including upgrades",
-        parameters: z.object({
+        inputSchema: z.object({
           quantity: z.number().describe("Number of cards"),
           metallicUpgrade: z.boolean().describe("Whether to include metallic upgrade"),
         }),
@@ -35,13 +35,13 @@ export async function POST(req: Request) {
           return {
             total,
             currency: "UGX",
-            formatted: `UGX \${total.toLocaleString()}`,
+            formatted: `UGX ${total.toLocaleString()}`,
           };
         },
       }),
       getPostingSchedule: tool({
         description: "Get the optimal posting schedule for the brand",
-        parameters: z.object({}),
+        inputSchema: z.object({}),
         execute: async () => {
           return {
             weekdays: ["12:00 PM", "6:00 PM EAT"],
@@ -54,5 +54,5 @@ export async function POST(req: Request) {
     },
   });
 
-  return result.toDataStreamResponse();
+  return result.toTextStreamResponse();
 }

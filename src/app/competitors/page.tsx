@@ -47,8 +47,20 @@ import { getCompetitors } from "@/lib/data/competitors";
 import { formatNumber } from "@/lib/utils";
 import { SparklineChart } from "@/components/charts/SparklineChart";
 
-function AddCompetitorDialog() {
+function AddCompetitorDialog({ onAdd }: { onAdd: (c: any) => void }) {
   const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    handle: "",
+    displayName: "",
+    platform: "instagram" as any,
+  });
+
+  const handleAdd = () => {
+    if (!formData.handle || !formData.displayName) return;
+    onAdd(formData);
+    setFormData({ handle: "", displayName: "", platform: "instagram" });
+    setOpen(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -70,15 +82,28 @@ function AddCompetitorDialog() {
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
             <Label htmlFor="handle">Handle</Label>
-            <Input id="handle" placeholder="@username" />
+            <Input 
+              id="handle" 
+              placeholder="@username" 
+              value={formData.handle}
+              onChange={(e) => setFormData({ ...formData, handle: e.target.value })}
+            />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="name">Display Name</Label>
-            <Input id="name" placeholder="Brand Name" />
+            <Input 
+              id="name" 
+              placeholder="Brand Name" 
+              value={formData.displayName}
+              onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
+            />
           </div>
           <div className="grid gap-2">
             <Label>Platform</Label>
-            <Select>
+            <Select 
+              value={formData.platform}
+              onValueChange={(val) => setFormData({ ...formData, platform: val })}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select platform" />
               </SelectTrigger>
@@ -95,7 +120,7 @@ function AddCompetitorDialog() {
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={() => setOpen(false)}>Add</Button>
+          <Button onClick={handleAdd}>Add</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -209,13 +234,38 @@ function CompetitorDetailCard({ competitor }: { competitor: Competitor }) {
 }
 
 export default function CompetitorsPage() {
-  const competitors = getCompetitors();
+  const [competitors, setCompetitors] = useState(getCompetitors());
   const [sortBy, setSortBy] = useState<"followers" | "avgLikes" | "growthRate">(
     "followers"
   );
   const [selectedCompetitor, setSelectedCompetitor] = useState<Competitor | null>(null);
 
   const sortedCompetitors = [...competitors].sort((a, b) => b[sortBy] - a[sortBy]);
+
+  const handleAddCompetitor = (newComp: any) => {
+    const competitor: Competitor = {
+      id: `comp-\${Date.now()}`,
+      handle: newComp.handle,
+      displayName: newComp.displayName,
+      platform: newComp.platform,
+      followers: 0,
+      growthRate: 0,
+      avgLikes: 0,
+      avgComments: 0,
+      postingFrequency: "N/A",
+      topPosts: [],
+      growthHistory: [
+        { date: "May 1", followers: 0 },
+        { date: "May 2", followers: 0 },
+        { date: "May 3", followers: 0 },
+        { date: "May 4", followers: 0 },
+        { date: "May 5", followers: 0 },
+        { date: "May 6", followers: 0 },
+        { date: "May 7", followers: 0 },
+      ],
+    };
+    setCompetitors([competitor, ...competitors]);
+  };
 
   return (
     <div className="space-y-6">
@@ -227,7 +277,7 @@ export default function CompetitorsPage() {
             Monitor competitor accounts, engagement, and growth trends.
           </p>
         </div>
-        <AddCompetitorDialog />
+        <AddCompetitorDialog onAdd={handleAddCompetitor} />
       </div>
 
       {/* Summary Cards */}

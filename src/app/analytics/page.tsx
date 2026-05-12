@@ -18,13 +18,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TrendingUp, TrendingDown, Minus, CalendarDays } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, CalendarDays, Download, Camera, Video, Music2 } from "lucide-react";
 import { BarChartCard } from "@/components/charts/BarChartCard";
 import { LineChartCard } from "@/components/charts/LineChartCard";
 import { getAnalyticsData } from "@/lib/data/analytics";
 import { formatNumber, formatDate } from "@/lib/utils";
+import { useState } from "react";
 
 export default function AnalyticsPage() {
+  const [platform, setPlatform] = useState("all");
   const data = getAnalyticsData();
 
   return (
@@ -37,10 +39,37 @@ export default function AnalyticsPage() {
             Track your content performance and audience growth metrics.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <Select value={platform} onValueChange={(val) => setPlatform(val || "all")}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="Platform" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Platforms</SelectItem>
+              <SelectItem value="instagram">
+                <div className="flex items-center gap-2">
+                  <Camera className="h-3.5 w-3.5 text-pink-400" />
+                  Instagram
+                </div>
+              </SelectItem>
+              <SelectItem value="tiktok">
+                <div className="flex items-center gap-2">
+                  <Music2 className="h-3.5 w-3.5 text-cyan-400" />
+                  TikTok
+                </div>
+              </SelectItem>
+              <SelectItem value="youtube">
+                <div className="flex items-center gap-2">
+                  <Video className="h-3.5 w-3.5 text-red-500" />
+                  YouTube
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+
           <Select defaultValue="30">
-            <SelectTrigger className="w-[160px]">
-              <CalendarDays className="h-4 w-4 mr-2" />
+            <SelectTrigger className="w-[140px]">
+              <CalendarDays className="h-4 w-4 mr-2 text-muted-foreground" />
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -50,6 +79,15 @@ export default function AnalyticsPage() {
               <SelectItem value="90">Last 90 days</SelectItem>
             </SelectContent>
           </Select>
+
+          <Button 
+            variant="outline" 
+            size="icon" 
+            title="Export Report"
+            onClick={() => alert("Generating PDF report...")}
+          >
+            <Download className="h-4 w-4" />
+          </Button>
         </div>
       </div>
 

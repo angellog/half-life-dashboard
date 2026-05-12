@@ -41,6 +41,7 @@ import {
   Globe,
   Wifi,
   WifiOff,
+  Zap,
   Loader2,
   RotateCcw,
   Brain,
@@ -995,6 +996,7 @@ function BillingSection() {
 function AIConfigSection() {
   const [url, setUrl] = useState("");
   const [token, setToken] = useState("");
+  const [mode, setMode] = useState<"gateway" | "native">("native");
   const [saved, setSaved] = useState(false);
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<string | null>(null);
@@ -1003,10 +1005,11 @@ function AIConfigSection() {
     const settings = getOpenClawSettings();
     setUrl(settings.gatewayUrl);
     setToken(settings.authToken);
+    setMode(settings.mode || "native");
   }, []);
 
   function handleSave() {
-    saveOpenClawSettings({ gatewayUrl: url, authToken: token });
+    saveOpenClawSettings({ gatewayUrl: url, authToken: token, mode: mode });
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   }
@@ -1015,6 +1018,7 @@ function AIConfigSection() {
     clearOpenClawSettings();
     setUrl("ws://127.0.0.1:18789");
     setToken("");
+    setMode("native");
   }
 
   async function handleTest() {
@@ -1052,8 +1056,60 @@ function AIConfigSection() {
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
+            <Zap className="h-4 w-4 text-violet-400" />
+            AI Operation Mode
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+             <button
+                onClick={() => setMode("native")}
+                className={cn(
+                  "flex flex-col items-start gap-2 p-4 rounded-xl border text-left transition-all",
+                  mode === "native"
+                    ? "bg-violet-500/10 border-violet-500 ring-1 ring-violet-500"
+                    : "bg-accent/30 border-border hover:border-muted-foreground"
+                )}
+              >
+                <div className="flex items-center gap-2">
+                   <div className={cn("p-1.5 rounded-lg", mode === "native" ? "bg-violet-500 text-white" : "bg-muted")}>
+                      <Zap className="h-4 w-4" />
+                   </div>
+                   <span className="font-bold text-sm">Dashboard Native</span>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Fast, integrated AI strategist. Always online, zero configuration required. Recommended for most users.
+                </p>
+              </button>
+
+              <button
+                onClick={() => setMode("gateway")}
+                className={cn(
+                  "flex flex-col items-start gap-2 p-4 rounded-xl border text-left transition-all",
+                  mode === "gateway"
+                    ? "bg-violet-500/10 border-violet-500 ring-1 ring-violet-500"
+                    : "bg-accent/30 border-border hover:border-muted-foreground"
+                )}
+              >
+                <div className="flex items-center gap-2">
+                   <div className={cn("p-1.5 rounded-lg", mode === "gateway" ? "bg-violet-500 text-white" : "bg-muted")}>
+                      <Wifi className="h-4 w-4" />
+                   </div>
+                   <span className="font-bold text-sm">OpenClaw Gateway</span>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                   Connect to your local workstation for full control over tools, memory, and model overrides.
+                </p>
+              </button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className={cn(mode === "native" && "opacity-60 pointer-events-none")}>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
             <Bot className="h-4 w-4 text-violet-400" />
-            OpenClaw Gateway
+            Gateway Configuration
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-5">
@@ -1107,7 +1163,7 @@ function AIConfigSection() {
                 variant="outline"
                 size="sm"
                 onClick={handleTest}
-                disabled={testing || !url}
+                disabled={testing || !url || mode === "native"}
                 className="gap-1.5 text-xs"
               >
                 {testing ? (
@@ -1140,7 +1196,7 @@ function AIConfigSection() {
               ) : (
                 <>
                   <Save className="h-3 w-3" />
-                  Save
+                  Save Settings
                 </>
               )}
             </Button>
@@ -1149,7 +1205,7 @@ function AIConfigSection() {
       </Card>
 
       {/* Memory info */}
-      <Card>
+      <Card className={cn(mode === "native" && "opacity-60")}>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <Brain className="h-4 w-4 text-violet-400" />

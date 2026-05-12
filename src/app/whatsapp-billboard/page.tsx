@@ -63,17 +63,30 @@ const STATUS_STYLES: Record<string, { color: string; icon: React.ElementType }> 
   draft: { color: "bg-zinc-500/20 text-zinc-400", icon: FileEdit },
 };
 
-function CreateCampaignDialog() {
+function CreateCampaignDialog({ trigger }: { trigger?: React.ReactElement }) {
   const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    type: "image",
+    slot: "evening",
+  });
+
+  const handleCreate = () => {
+    if (!formData.name) return;
+    alert(`Campaign "${formData.name}" created successfully and sent for approval!`);
+    setOpen(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button className="gap-2">
-            <Plus className="h-4 w-4" />
-            New Campaign
-          </Button>
+          trigger || (
+            <Button className="gap-2">
+              <Plus className="h-4 w-4" />
+              New Campaign
+            </Button>
+          )
         }
       />
       <DialogContent className="sm:max-w-[500px]">
@@ -86,11 +99,19 @@ function CreateCampaignDialog() {
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
             <Label htmlFor="campaign-name">Campaign Name</Label>
-            <Input id="campaign-name" placeholder="e.g. Summer Sale Promo" />
+            <Input 
+              id="campaign-name" 
+              placeholder="e.g. Summer Sale Promo" 
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            />
           </div>
           <div className="grid gap-2">
             <Label>Creative Type</Label>
-            <Select>
+            <Select 
+              value={formData.type}
+              onValueChange={(val) => setFormData({ ...formData, type: val || "image" })}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>
@@ -126,7 +147,10 @@ function CreateCampaignDialog() {
           </div>
           <div className="grid gap-2">
             <Label>Time Slot</Label>
-            <Select>
+            <Select
+              value={formData.slot}
+              onValueChange={(val) => setFormData({ ...formData, slot: val || "evening" })}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select time slot" />
               </SelectTrigger>
@@ -160,7 +184,7 @@ function CreateCampaignDialog() {
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={() => setOpen(false)}>Create Campaign</Button>
+          <Button onClick={handleCreate} disabled={!formData.name}>Create Campaign</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -381,14 +405,18 @@ export default function WhatsAppBillboardPage() {
                         /day
                       </span>
                     </span>
-                    <Button
-                      size="sm"
-                      variant={slot.available ? "default" : "outline"}
-                      disabled={!slot.available}
-                      className="text-xs h-7"
-                    >
-                      {slot.available ? "Book Slot" : "Unavailable"}
-                    </Button>
+                    <CreateCampaignDialog 
+                      trigger={
+                        <Button
+                          size="sm"
+                          variant={slot.available ? "default" : "outline"}
+                          disabled={!slot.available}
+                          className="text-xs h-7"
+                        >
+                          {slot.available ? "Book Slot" : "Unavailable"}
+                        </Button>
+                      }
+                    />
                   </div>
                 </CardContent>
               </Card>

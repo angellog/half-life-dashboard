@@ -25,7 +25,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Plus, Image, Heart, MessageCircle, Share2, Bookmark, GripVertical } from "lucide-react";
 import { Post, PostStatus, PostType } from "@/types";
-import { getPostsByStatus } from "@/lib/data/instagram";
+import { useInstagramStore } from "@/hooks/useInstagramStore";
 import { formatDate, formatNumber } from "@/lib/utils";
 
 const STATUS_COLUMNS: { key: PostStatus; label: string; color: string }[] = [
@@ -44,15 +44,24 @@ const TYPE_BADGES: Record<PostType, { label: string; className: string }> = {
 
 function PostCard({ post }: { post: Post }) {
   const typeBadge = TYPE_BADGES[post.type];
+  const deletePost = useInstagramStore((state) => state.deletePost);
 
   return (
-    <Card className="group cursor-pointer transition-colors hover:border-primary/20">
+    <Card className="group cursor-pointer transition-colors hover:border-primary/20 relative">
       <CardContent className="p-4">
         <div className="flex items-start justify-between mb-2">
           <Badge variant="secondary" className={typeBadge.className}>
             {typeBadge.label}
           </Badge>
-          <GripVertical className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              deletePost(post.id);
+            }}
+            className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-400"
+          >
+            <Plus className="h-4 w-4 rotate-45" />
+          </button>
         </div>
 
         {/* Image placeholder */}
@@ -101,6 +110,33 @@ function PostCard({ post }: { post: Post }) {
 
 function AddPostDialog() {
   const [open, setOpen] = useState(false);
+  const addPost = useInstagramStore((state) => state.addPost);
+
+  const [formData, setFormData] = useState({
+    caption: "",
+    type: "reel" as PostType,
+    status: "draft" as PostStatus,
+    date: "",
+  });
+
+  const handleSubmit = () => {
+    if (!formData.caption) return;
+    
+    addPost({
+      caption: formData.caption,
+      type: formData.type,
+      status: formData.status,
+      scheduledDate: formData.date || undefined,
+    });
+    
+    setFormData({
+      caption: "",
+      type: "reel",
+      status: "draft",
+      date: "",
+    });
+    setOpen(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -124,6 +160,8 @@ function AddPostDialog() {
             <Label htmlFor="caption">Caption</Label>
             <textarea
               id="caption"
+              value={formData.caption}
+              onChange={(e) => setFormData({ ...formData, caption: e.target.value })}
               className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               placeholder="Write your caption here..."
             />
@@ -131,7 +169,10 @@ function AddPostDialog() {
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label>Post Type</Label>
-              <Select>
+              <Select 
+                value={formData.type} 
+                onValueChange={(val) => setFormData({ ...formData, type: (val as PostType) || "reel" })}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
@@ -145,7 +186,10 @@ function AddPostDialog() {
             </div>
             <div className="grid gap-2">
               <Label>Status</Label>
-              <Select>
+              <Select 
+                value={formData.status} 
+                onValueChange={(val) => setFormData({ ...formData, status: (val as PostStatus) || "draft" })}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
@@ -153,20 +197,26 @@ function AddPostDialog() {
                   <SelectItem value="scheduled">Scheduled</SelectItem>
                   <SelectItem value="draft">Draft</SelectItem>
                   <SelectItem value="backlog">Backlog</SelectItem>
+                  <SelectItem value="published">Published</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="date">Scheduled Date</Label>
-            <Input id="date" type="date" />
+            <Label htmlFor="date">Date (Scheduled/Published)</Label>
+            <Input 
+              id="date" 
+              type="date" 
+              value={formData.date}
+              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+            />
           </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={() => setOpen(false)}>Add Post</Button>
+          <Button onClick={handleSubmit} disabled={!formData.caption}>Add Post</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -174,6 +224,8 @@ function AddPostDialog() {
 }
 
 export default function InstagramPage() {
+  const postsByStatus = useInstagramStore((state) => state.posts);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -184,13 +236,18 @@ export default function InstagramPage() {
             Manage your content pipeline — schedule, draft, and track posts.
           </p>
         </div>
-        <AddPostDialog />
+        <div className="flex items-center gap-2">
+           <Button variant="outline" size="sm" onClick={() => alert("Connecting Instagram OAuth flow...")}>
+              Connect Instagram
+           </Button>
+           <AddPostDialog />
+        </div>
       </div>
 
       {/* Kanban Board */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         {STATUS_COLUMNS.map((column) => {
-          const posts = getPostsByStatus(column.key);
+          const posts = postsByStatus.filter(p => p.status === column.key);
           return (
             <div key={column.key} className="space-y-3">
               {/* Column header */}

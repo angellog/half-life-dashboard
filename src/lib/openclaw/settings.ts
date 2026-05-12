@@ -11,6 +11,16 @@ const KEYS = {
   mode: "openclaw_mode",
 } as const;
 
+const ENV_GATEWAY_URL =
+  typeof process !== "undefined"
+    ? process.env.NEXT_PUBLIC_OPENCLAW_GATEWAY_URL
+    : undefined;
+
+const ENV_AUTH_TOKEN =
+  typeof process !== "undefined"
+    ? process.env.NEXT_PUBLIC_OPENCLAW_AUTH_TOKEN
+    : undefined;
+
 const ENV_MODE = 
   typeof process !== "undefined"
     ? (process.env.NEXT_PUBLIC_AI_MODE as "gateway" | "native")
@@ -59,39 +69,6 @@ export function saveSettings(
   if (settings.mode !== undefined) {
     localStorage.setItem(KEYS.mode, settings.mode);
   }
-
-export function getSettings(): OpenClawSettings {
-  if (!isBrowser()) {
-    return {
-      gatewayUrl: ENV_GATEWAY_URL || DEFAULT_GATEWAY_URL,
-      authToken: ENV_AUTH_TOKEN || "",
-      activeSessionKey: null,
-    };
-  }
-
-  return {
-    gatewayUrl:
-      localStorage.getItem(KEYS.gatewayUrl) ||
-      ENV_GATEWAY_URL ||
-      DEFAULT_GATEWAY_URL,
-    authToken:
-      localStorage.getItem(KEYS.authToken) || ENV_AUTH_TOKEN || "",
-    activeSessionKey:
-      localStorage.getItem(KEYS.activeSessionKey) || null,
-  };
-}
-
-export function saveSettings(
-  settings: Partial<OpenClawSettings>
-): void {
-  if (!isBrowser()) return;
-
-  if (settings.gatewayUrl !== undefined) {
-    localStorage.setItem(KEYS.gatewayUrl, settings.gatewayUrl);
-  }
-  if (settings.authToken !== undefined) {
-    localStorage.setItem(KEYS.authToken, settings.authToken);
-  }
   if (settings.activeSessionKey !== undefined) {
     if (settings.activeSessionKey === null) {
       localStorage.removeItem(KEYS.activeSessionKey);
@@ -106,6 +83,7 @@ export function clearSettings(): void {
   localStorage.removeItem(KEYS.gatewayUrl);
   localStorage.removeItem(KEYS.authToken);
   localStorage.removeItem(KEYS.activeSessionKey);
+  localStorage.removeItem(KEYS.mode);
 }
 
 export function hasSettings(): boolean {
