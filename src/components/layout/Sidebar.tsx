@@ -16,9 +16,11 @@ import {
   Bot,
   ChevronLeft,
   Menu,
+  Settings,
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { UserMenu } from "@/components/auth/UserMenu";
 
 const navItems = [
   { title: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -66,7 +68,7 @@ export function Sidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-40 h-screen border-r border-border bg-card transition-all duration-300",
+          "fixed left-0 top-0 z-40 h-screen border-r border-border bg-card transition-all duration-300 flex flex-col",
           collapsed ? "w-[70px]" : "w-[260px]",
           mobileOpen
             ? "translate-x-0"
@@ -74,7 +76,7 @@ export function Sidebar() {
         )}
       >
         {/* Logo / Brand */}
-        <div className="flex h-16 items-center justify-between border-b border-border px-4">
+        <div className="flex h-16 items-center justify-between border-b border-border px-4 shrink-0">
           {!collapsed && (
             <Link href="/" className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm">
@@ -111,7 +113,7 @@ export function Sidebar() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex flex-col gap-1 p-3">
+        <nav className="flex flex-col gap-1 p-3 flex-1 overflow-y-auto">
           {navItems.map((item) => {
             const isActive =
               item.href === "/"
@@ -153,24 +155,30 @@ export function Sidebar() {
               </Link>
             );
           })}
+
+          {/* Settings link */}
+          <div className="mt-auto pt-2">
+            <Link
+              href="/settings"
+              onClick={() => setMobileOpen(false)}
+              className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                pathname.startsWith("/settings")
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+                collapsed && "justify-center px-2"
+              )}
+            >
+              <Settings className="h-5 w-5 shrink-0" />
+              {!collapsed && <span className="flex-1">Settings</span>}
+            </Link>
+          </div>
         </nav>
 
-        {/* Bottom section */}
-        {!collapsed && (
-          <div className="absolute bottom-0 left-0 right-0 border-t border-border p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-sm font-semibold">
-                HF
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">Half Life Brand</p>
-                <p className="text-xs text-muted-foreground truncate">
-                  Free Plan
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Bottom section — User Menu */}
+        <div className="shrink-0">
+          <UserMenu collapsed={collapsed} />
+        </div>
       </aside>
     </>
   );
