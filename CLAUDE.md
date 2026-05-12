@@ -81,7 +81,7 @@ src/
 - [x] Phase 4: Content Calendar
 - [x] Phase 5: Competitor Tracker
 - [x] Phase 6: News Consolidator
-- [ ] Phase 7: NFC Card Store
-- [ ] Phase 8: Live Meter Billing
-- [ ] Phase 9: WhatsApp Status Billboard
-- [ ] Phase 10: AI Agent (OpenClaw Pro)
+- [x] Phase 7: NFC Card Store
+- [x] Phase 8: Live Meter Billing
+- [x] Phase 9: WhatsApp Status Billboard
+- [x] Phase 10: AI Agent (OpenClaw Pro)
