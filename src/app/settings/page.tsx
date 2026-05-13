@@ -457,6 +457,42 @@ function PreferencesSection() {
               }
             />
           </div>
+
+          <Separator />
+
+          {/* Dashboard Mode (Business/Personal) */}
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium">Dashboard Mode</p>
+              <p className="text-xs text-muted-foreground">
+                Switch between Business and Personal views
+              </p>
+            </div>
+            <div className="flex items-center gap-2 bg-accent/50 p-1 rounded-lg border border-border">
+              <button
+                onClick={() => updatePref("dashboardMode", "business")}
+                className={cn(
+                  "px-3 py-1.5 text-xs font-medium rounded-md transition-all",
+                  prefs.dashboardMode === "business"
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                Business
+              </button>
+              <button
+                onClick={() => updatePref("dashboardMode", "personal")}
+                className={cn(
+                  "px-3 py-1.5 text-xs font-medium rounded-md transition-all",
+                  prefs.dashboardMode === "personal"
+                    ? "bg-violet-600 text-white shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                Personal
+              </button>
+            </div>
+          </div>
         </CardContent>
       </Card>
 

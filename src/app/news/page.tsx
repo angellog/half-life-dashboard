@@ -52,13 +52,16 @@ export default function NewsPage() {
     : articles;
 
   const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSync, setLastSync] = useState<Date>(new Date());
 
   const handleSync = () => {
     setIsSyncing(true);
+    // Simulate fetching fresh data
     setTimeout(() => {
       setIsSyncing(false);
-      alert("News feed updated with latest industry trends!");
-    }, 2000);
+      setLastSync(new Date());
+      alert("Successfully fetched 12 new industry insights and updated your feed.");
+    }, 2500);
   };
 
   return (
@@ -69,17 +72,18 @@ export default function NewsPage() {
           <h1 className="text-3xl font-bold tracking-tight">News Feed</h1>
           <p className="text-muted-foreground mt-1">
             Latest sneakers & fashion industry news from top sources.
+            <span className="text-[10px] ml-2 font-mono">Last updated: {lastSync.toLocaleTimeString()}</span>
           </p>
         </div>
         <Button 
           variant="outline" 
           size="sm" 
-          className="gap-2" 
+          className={cn("gap-2 border-primary/20", isSyncing && "bg-primary/5")}
           onClick={handleSync}
           disabled={isSyncing}
         >
-          <RefreshCw className={cn("h-4 w-4", isSyncing && "animate-spin")} />
-          {isSyncing ? "Syncing..." : "Sync News"}
+          <RefreshCw className={cn("h-4 w-4", isSyncing && "animate-spin text-primary")} />
+          {isSyncing ? "Fetching..." : "Sync News"}
         </Button>
       </div>
 

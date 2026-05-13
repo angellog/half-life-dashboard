@@ -27,6 +27,7 @@ export interface DashboardPreferences {
   notificationsEnabled: boolean;
   emailDigest: "daily" | "weekly" | "never";
   compactMode: boolean;
+  dashboardMode: "business" | "personal";
 }
 
 export const DEFAULT_PREFERENCES: DashboardPreferences = {
@@ -36,6 +37,7 @@ export const DEFAULT_PREFERENCES: DashboardPreferences = {
   notificationsEnabled: true,
   emailDigest: "weekly",
   compactMode: false,
+  dashboardMode: "business",
 };
 
 // --- Team Members ---

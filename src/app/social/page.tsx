@@ -363,6 +363,15 @@ function AddPostDialog({ platform }: { platform: Platform }) {
 export default function SocialManagerPage() {
   const { activePlatform, setActivePlatform, posts } = useSocialMediaStore();
   const currentPosts = posts[activePlatform] || [];
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleSync = () => {
+    setIsSyncing(true);
+    setTimeout(() => {
+      setIsSyncing(false);
+      alert(`${PLATFORM_LABELS[activePlatform]} is now in sync with Metricool. 2 new drafts imported.`);
+    }, 2000);
+  };
 
   return (
     <div className="space-y-6">
@@ -398,8 +407,15 @@ export default function SocialManagerPage() {
         </div>
 
         <div className="flex items-center gap-2">
-           <Button variant="outline" size="sm" onClick={() => alert(`Syncing ${PLATFORM_LABELS[activePlatform]} with Metricool...`)}>
-              <RefreshCw className="h-4 w-4 mr-2" /> Sync
+           <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleSync}
+            disabled={isSyncing}
+            className={cn(isSyncing && "bg-primary/5")}
+           >
+              <RefreshCw className={cn("h-4 w-4 mr-2", isSyncing && "animate-spin text-primary")} /> 
+              {isSyncing ? "Syncing..." : "Sync"}
            </Button>
            <AddPostDialog platform={activePlatform} />
         </div>

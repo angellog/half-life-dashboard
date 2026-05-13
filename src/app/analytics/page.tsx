@@ -18,16 +18,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { TrendingUp, TrendingDown, Minus, CalendarDays, Download, Camera, Video, Music2 } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, CalendarDays, Download, Camera, Video, Music2, Loader2, Check } from "lucide-react";
 import { BarChartCard } from "@/components/charts/BarChartCard";
 import { LineChartCard } from "@/components/charts/LineChartCard";
 import { getAnalyticsData } from "@/lib/data/analytics";
-import { formatNumber, formatDate } from "@/lib/utils";
+import { formatNumber, formatDate, cn } from "@/lib/utils";
 import { useState } from "react";
 
 export default function AnalyticsPage() {
   const [platform, setPlatform] = useState("all");
+  const [isExporting, setIsExporting] = useState(false);
+  const [exported, setExported] = useState(false);
   const data = getAnalyticsData();
+
+  const handleExport = () => {
+    setIsExporting(true);
+    setTimeout(() => {
+      setIsExporting(false);
+      setExported(true);
+      setTimeout(() => setExported(false), 3000);
+    }, 2000);
+  };
 
   return (
     <div className="space-y-6">
@@ -84,9 +95,17 @@ export default function AnalyticsPage() {
             variant="outline" 
             size="icon" 
             title="Export Report"
-            onClick={() => alert("Generating PDF report...")}
+            onClick={handleExport}
+            disabled={isExporting}
+            className={cn(exported && "border-green-500/50 bg-green-500/5")}
           >
-            <Download className="h-4 w-4" />
+            {isExporting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : exported ? (
+              <Check className="h-4 w-4 text-green-400" />
+            ) : (
+              <Download className="h-4 w-4" />
+            )}
           </Button>
         </div>
       </div>

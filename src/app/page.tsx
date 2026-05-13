@@ -2,8 +2,21 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import {
+import { useSocialMediaStore } from "@/hooks/useSocialMediaStore";
+import { useDashboardMode } from "@/hooks/useDashboardMode";
+import { cn } from "@/lib/utils";
+import { 
+  Zap, 
+  Plus, 
+  ChevronRight, 
+  Activity,
+  Send,
+  MoreVertical,
+  MessageCircle,
+  Bot,
   Camera,
   BarChart3,
   CalendarDays,
@@ -11,14 +24,11 @@ import {
   Newspaper,
   CreditCard,
   Gauge,
-  MessageCircle,
-  Bot,
   TrendingUp,
   Eye,
   FileText,
-  ArrowUpRight,
+  ArrowUpRight
 } from "lucide-react";
-import { useSocialMediaStore } from "@/hooks/useSocialMediaStore";
 
 const quickStats = [
   {
@@ -51,16 +61,107 @@ const quickStats = [
   },
 ];
 
+function DispatchView({ mode }: { mode: "business" | "personal" }) {
+  return (
+    <div className="md:hidden space-y-4 pb-20">
+      {/* Active Status / Live Meter Mini */}
+      <Card className="bg-primary/5 border-primary/20">
+        <CardContent className="p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
+            <div>
+              <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">System Live</p>
+              <p className="text-sm font-bold">UGX 52,350 <span className="text-[10px] font-normal text-muted-foreground">meter</span></p>
+            </div>
+          </div>
+          <Button size="sm" variant="outline" className="h-8 text-xs gap-1">
+            <Zap className="h-3 w-3" />
+            Boost
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Grid for Crucial Parts */}
+      <div className="grid grid-cols-2 gap-3">
+        <Card className="bg-card">
+          <CardContent className="p-4">
+            <Activity className="h-4 w-4 text-blue-400 mb-2" />
+            <p className="text-[10px] text-muted-foreground">Impressions</p>
+            <p className="text-lg font-bold">284.7K</p>
+            <p className="text-[10px] text-green-400">+12%</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-card">
+          <CardContent className="p-4">
+            <MessageCircle className="h-4 w-4 text-green-400 mb-2" />
+            <p className="text-[10px] text-muted-foreground">Campaigns</p>
+            <p className="text-lg font-bold">3 Active</p>
+            <p className="text-[10px] text-muted-foreground">Next: 7 PM</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Quick Action Dispatch */}
+      <div className="space-y-2">
+        <h3 className="text-xs font-bold uppercase text-muted-foreground px-1">Dispatch Queue</h3>
+        <Card>
+          <CardContent className="p-0">
+            {[
+              { title: "Nike AF1 Drop", platform: "Instagram", time: "12:30 PM", color: "bg-pink-500" },
+              { title: "Weekly News", platform: "WhatsApp", time: "2:00 PM", color: "bg-green-500" },
+            ].map((item, i) => (
+              <div key={i} className="flex items-center justify-between p-3 border-b last:border-0 border-border">
+                <div className="flex items-center gap-3">
+                  <div className={`h-1.5 w-1.5 rounded-full ${item.color}`} />
+                  <div>
+                    <p className="text-sm font-medium">{item.title}</p>
+                    <p className="text-[10px] text-muted-foreground">{item.platform} • {item.time}</p>
+                  </div>
+                </div>
+                <Button size="icon" variant="ghost" className="h-8 w-8">
+                  <Send className="h-3 w-3" />
+                </Button>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* AI Strategist Mini */}
+      <Card className="bg-violet-600/10 border-violet-500/20">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="h-8 w-8 rounded-full bg-violet-600 flex items-center justify-center">
+              <Bot className="h-4 w-4 text-white" />
+            </div>
+            <div>
+              <p className="text-xs font-bold">OpenClaw Pro</p>
+              <p className="text-[10px] text-muted-foreground">AI Strategist Online</p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Input placeholder="Ask AI..." className="h-8 text-xs bg-background/50" />
+            <Button size="sm" className="h-8 bg-violet-600 px-3">
+              <Send className="h-3 w-3" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export default function DashboardHome() {
   const { posts } = useSocialMediaStore();
+  const { mode } = useDashboardMode();
   
   // Calculate total posts across all platforms
   const totalSocialPosts = Object.values(posts).reduce((acc, platformPosts) => acc + platformPosts.length, 0);
 
   const sections = [
     {
-      title: "Social Manager",
-      description: "Manage content across all your social platforms",
+      title: mode === "business" ? "Social Manager" : "Personal Socials",
+      description: mode === "business" ? "Manage content across all your social platforms" : "Track your personal social presence",
       href: "/social",
       icon: Camera,
       stat: `${totalSocialPosts} items`,
@@ -97,10 +198,11 @@ export default function DashboardHome() {
       statLabel: "tracked",
       color: "text-orange-400",
       bgColor: "bg-orange-500/10",
+      hidden: mode === "personal",
     },
     {
-      title: "News Feed",
-      description: "Latest sneaker & fashion industry news",
+      title: mode === "business" ? "News Feed" : "Personal Feed",
+      description: mode === "business" ? "Latest sneaker & fashion industry news" : "Your daily curated information",
       href: "/news",
       icon: Newspaper,
       stat: "22 articles",
@@ -127,6 +229,7 @@ export default function DashboardHome() {
       statLabel: "current plan",
       color: "text-emerald-400",
       bgColor: "bg-emerald-500/10",
+      hidden: mode === "personal",
     },
     {
       title: "WhatsApp Billboard",
@@ -137,6 +240,7 @@ export default function DashboardHome() {
       statLabel: "active campaigns",
       color: "text-green-400",
       bgColor: "bg-green-500/10",
+      hidden: mode === "personal",
     },
     {
       title: "AI Agent",
@@ -149,20 +253,35 @@ export default function DashboardHome() {
       bgColor: "bg-violet-500/10",
       badge: "Pro",
     },
-  ];
+  ].filter(s => !s.hidden);
 
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">
-          Welcome back. Here&apos;s your content performance overview.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {mode === "business" ? "Business Dashboard" : "Personal OS"}
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            {mode === "business" 
+              ? "Welcome back. Here's your brand's performance overview."
+              : "Welcome. Here's your personal activity overview."}
+          </p>
+        </div>
+        <div className={cn(
+          "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border animate-pulse",
+          mode === "business" ? "border-primary/50 text-primary bg-primary/5" : "border-violet-500/50 text-violet-400 bg-violet-500/5"
+        )}>
+          {mode === "business" ? "Enterprise Mode" : "Personal Mode"}
+        </div>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Dispatch View (Mobile Only) */}
+      <DispatchView mode={mode} />
+
+      {/* Quick Stats (Desktop Only) */}
+      <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {quickStats.map((stat) => {
           const Icon = stat.icon;
           return (
@@ -196,8 +315,8 @@ export default function DashboardHome() {
         })}
       </div>
 
-      {/* Section Cards */}
-      <div>
+      {/* Section Cards (Desktop Only) */}
+      <div className="hidden md:block">
         <h2 className="text-lg font-semibold mb-4">Your Tools</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {sections.map((section) => {
@@ -252,8 +371,8 @@ export default function DashboardHome() {
         </div>
       </div>
 
-      {/* Recent Activity */}
-      <div>
+      {/* Recent Activity (Desktop/Optimized) */}
+      <div className="hidden md:block">
         <h2 className="text-lg font-semibold mb-4">Recent Activity</h2>
         <Card>
           <CardContent className="p-0">

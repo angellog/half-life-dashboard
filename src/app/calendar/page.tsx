@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { CalendarItem, Platform, PLATFORM_COLORS, PLATFORM_LABELS } from "@/types";
 import { getCalendarItems } from "@/lib/data/calendar";
@@ -25,8 +26,6 @@ import {
   isToday,
   addMonths,
   subMonths,
-  isSameDay,
-  parseISO,
 } from "date-fns";
 import { cn } from "@/lib/utils";
 
@@ -39,6 +38,53 @@ const ALL_PLATFORMS: Platform[] = [
   "facebook-groups",
 ];
 
+function AddEventDialog({ open, onOpenChange }: { open: boolean, onOpenChange: (open: boolean) => void }) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Add Calendar Event</DialogTitle>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid gap-2">
+            <label className="text-sm font-medium">Event Title</label>
+            <Input placeholder="e.g. New Collection Drop" />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <label className="text-sm font-medium">Platform</label>
+              <select className="bg-background border border-input rounded-md px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary">
+                {ALL_PLATFORMS.map(p => (
+                  <option key={p} value={p}>{PLATFORM_LABELS[p]}</option>
+                ))}
+              </select>
+            </div>
+            <div className="grid gap-2">
+              <label className="text-sm font-medium">Type</label>
+              <select className="bg-background border border-input rounded-md px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary">
+                <option value="post">Post</option>
+                <option value="story">Story</option>
+                <option value="reel">Reel/Video</option>
+              </select>
+            </div>
+          </div>
+          <div className="grid gap-2">
+            <label className="text-sm font-medium">Date</label>
+            <Input type="date" />
+          </div>
+        </div>
+        <div className="flex justify-end gap-3 pt-4">
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+          <Button onClick={() => {
+            alert("Event scheduled successfully!");
+            onOpenChange(false);
+          }}>Schedule Event</Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function CalendarPage() {
   const [currentMonth, setCurrentMonth] = useState(new Date(2026, 4, 1)); // May 2026
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -46,6 +92,7 @@ export default function CalendarPage() {
     new Set(ALL_PLATFORMS)
   );
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [addEventOpen, setAddEventOpen] = useState(false);
 
   const allItems = getCalendarItems();
 
@@ -93,11 +140,13 @@ export default function CalendarPage() {
             Plan and schedule content across all your platforms.
           </p>
         </div>
-        <Button className="gap-2" onClick={() => alert("Add Event Modal Coming Soon...")}>
+        <Button className="gap-2" onClick={() => setAddEventOpen(true)}>
           <Plus className="h-4 w-4" />
           Add Event
         </Button>
       </div>
+
+      <AddEventDialog open={addEventOpen} onOpenChange={setAddEventOpen} />
 
       {/* Platform Filters */}
       <div className="flex items-center gap-2 flex-wrap">

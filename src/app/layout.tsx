@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { MobileNav } from "@/components/layout/MobileNav";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 
@@ -25,8 +26,9 @@ export default function RootLayout({
           <TooltipProvider>
             <Sidebar />
             <main className="md:pl-[260px] min-h-screen">
-              <div className="p-6 pt-20 md:pt-6">{children}</div>
+              <div className="p-6 pt-20 md:pt-6 pb-24 md:pb-6">{children}</div>
             </main>
+            <MobileNav />
           </TooltipProvider>
         </AuthProvider>
       </body>
