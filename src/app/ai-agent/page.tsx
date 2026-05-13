@@ -444,78 +444,31 @@ function LiveChatInterface() {
   if (!isLoaded) return null;
 
   return (
-    <div className="flex flex-col h-[calc(100vh-220px)] max-h-[700px]">
+    <div className="flex flex-col h-full">
       {/* Chat header */}
-      <div className="flex items-center gap-3 pb-4 border-b border-border">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-500/20">
-          <Bot className="h-5 w-5 text-violet-400" />
+      <div className="flex items-center gap-3 p-4 border-b border-border bg-card/50 backdrop-blur-sm shrink-0">
+        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-500/20">
+          <Bot className="h-4 w-4 text-violet-400" />
         </div>
-        <div>
+        <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-sm">OpenClaw Pro</h3>
+            <h3 className="font-semibold text-sm truncate">OpenClaw Pro</h3>
             <Badge className={cn(
-              "border-0 text-[10px]",
+              "border-0 text-[10px] h-4 px-1",
               mode === "native" ? "bg-emerald-500/20 text-emerald-400" : "bg-violet-500/20 text-violet-400"
             )}>
-              {mode === "native" ? "Integrated" : isConnected ? "Live" : "Offline"}
+              {mode === "native" ? "Native" : isConnected ? "Live" : "Offline"}
             </Badge>
-            {serverVersion && (
-              <span className="text-[10px] text-muted-foreground">
-                v{serverVersion}
-              </span>
-            )}
           </div>
-          <p className="text-xs text-muted-foreground">
-            {mode === "native" 
-              ? "Running natively in dashboard"
-              : isConnected
-                ? "Connected to OpenClaw Gateway"
-                : "Not connected — configure Gateway to enable AI"}
+          <p className="text-[10px] text-muted-foreground truncate">
+            {mode === "native" ? "AI Strategist Online" : isConnected ? "Connected to Gateway" : "Disconnected"}
           </p>
         </div>
-        <div className="ml-auto flex items-center gap-3">
-          {/* Memory status */}
-          {isConnected && memoryStatus && (
-            <div className="flex items-center gap-1.5">
-              <Brain className="h-3.5 w-3.5 text-muted-foreground" />
-              <span
-                className={cn(
-                  "text-[10px]",
-                  memoryStatus.available
-                    ? "text-green-400"
-                    : "text-muted-foreground"
-                )}
-              >
-                {memoryStatus.available ? (mode === "native" ? "Cloud Memory" : "Memory active") : "No memory"}
-              </span>
-            </div>
-          )}
-
-          {/* Connection indicator */}
-          <div className="flex items-center gap-1.5">
-            <div
-              className={cn(
-                "h-2 w-2 rounded-full",
-                isConnected
-                  ? "bg-green-400"
-                  : isConnecting
-                    ? "bg-amber-400 animate-pulse"
-                    : "bg-red-400"
-              )}
-            />
-            <span className="text-xs text-muted-foreground">
-              {isConnected
-                ? "Online"
-                : isConnecting
-                  ? "Connecting..."
-                  : "Offline"}
-            </span>
-          </div>
-
+        <div className="flex items-center gap-1.5 md:gap-3 shrink-0">
           {/* Settings button */}
           <button
             onClick={() => setSettingsOpen(true)}
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="p-2 text-muted-foreground hover:text-foreground transition-colors"
           >
             <Settings className="h-4 w-4" />
           </button>
@@ -524,7 +477,7 @@ function LiveChatInterface() {
           {isConnected && (
             <button
               onClick={newSession}
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              className="p-2 text-muted-foreground hover:text-foreground transition-colors"
               title="New Topic"
             >
               <Plus className="h-4 w-4" />
@@ -533,46 +486,22 @@ function LiveChatInterface() {
         </div>
       </div>
 
-      {/* Connection banner (when disconnected) */}
-      {!isConnected && !isConnecting && mode === "gateway" && (
-        <div className="flex items-center gap-3 px-4 py-3 my-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
-          <AlertCircle className="h-4 w-4 text-amber-400 shrink-0" />
-          <div className="flex-1">
-            <p className="text-xs text-amber-300">
-              Connect to an OpenClaw Gateway for real AI-powered responses.
-            </p>
-            {error && (
-              <p className="text-[10px] text-amber-400/70 mt-0.5">{error}</p>
-            )}
-          </div>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setSettingsOpen(true)}
-            className="text-xs shrink-0"
-          >
-            Configure
-          </Button>
-        </div>
-      )}
-
       {/* Messages */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto py-4 space-y-4 scroll-smooth"
+        className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scroll-smooth"
       >
         {/* Welcome message when empty and connected */}
         {messages.length === 0 && isConnected && (
-          <div className="flex flex-col items-center justify-center h-full text-center py-12">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-violet-500/10 mb-4">
-              <Bot className="h-8 w-8 text-violet-400" />
+          <div className="flex flex-col items-center justify-center h-full text-center py-8">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-500/10 mb-3">
+              <Bot className="h-6 w-6 text-violet-400" />
             </div>
-            <h3 className="text-lg font-semibold mb-1">
-              OpenClaw Pro is ready
+            <h3 className="text-base font-semibold mb-1">
+              Ready to strategize
             </h3>
-            <p className="text-sm text-muted-foreground max-w-sm">
-              I&apos;m your AI business strategist for Half Life. Ask me about
-              content strategy, competitors, analytics, or anything else.
+            <p className="text-xs text-muted-foreground max-w-[240px]">
+              Ask me about your brand, competitors, or campaign performance.
             </p>
           </div>
         )}
@@ -604,55 +533,50 @@ function LiveChatInterface() {
         )}
       </div>
 
-      {/* Suggested prompts */}
-      {messages.length === 0 && (
-        <div className="pb-3">
-          <p className="text-xs text-muted-foreground mb-2">Try asking:</p>
-          <div className="flex flex-wrap gap-2">
-            {prompts[0].prompts.slice(0, 3).map((prompt) => (
-              <button
-                key={prompt}
-                onClick={() => handlePromptClick(prompt)}
-                className="text-xs bg-accent hover:bg-accent/80 rounded-full px-3 py-1.5 transition-colors text-muted-foreground hover:text-foreground"
-              >
-                {prompt}
-              </button>
-            ))}
+      {/* Input area sticky bottom */}
+      <div className="p-4 border-t border-border bg-card/80 backdrop-blur-md shrink-0">
+        {messages.length === 0 && (
+          <div className="mb-3 overflow-x-auto no-scrollbar">
+            <div className="flex gap-2 whitespace-nowrap">
+              {prompts[0].prompts.slice(0, 3).map((prompt) => (
+                <button
+                  key={prompt}
+                  onClick={() => handlePromptClick(prompt)}
+                  className="text-[10px] bg-accent/50 hover:bg-accent rounded-full px-3 py-1.5 transition-colors text-muted-foreground hover:text-foreground border border-border"
+                >
+                  {prompt}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
-
-      {/* Input */}
-      <div className="flex gap-2 pt-3 border-t border-border">
-        <Input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-          placeholder={
-            isConnected
-              ? "Ask OpenClaw anything..."
-              : "Connect to Gateway to start chatting..."
-          }
-          disabled={!isConnected}
-          className="flex-1"
-        />
-        {isStreaming ? (
-          <Button
-            onClick={abort}
-            variant="outline"
-            className="gap-2 text-amber-400 border-amber-500/30 hover:bg-amber-500/10"
-          >
-            <Square className="h-3.5 w-3.5" />
-          </Button>
-        ) : (
-          <Button
-            onClick={handleSend}
-            disabled={!input.trim() || !isConnected}
-            className="bg-violet-600 hover:bg-violet-700 gap-2"
-          >
-            <Send className="h-4 w-4" />
-          </Button>
         )}
+        <div className="flex gap-2">
+          <Input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
+            placeholder={isConnected ? "Message OpenClaw..." : "AI Offline"}
+            disabled={!isConnected}
+            className="flex-1 h-11 bg-background"
+          />
+          {isStreaming ? (
+            <Button
+              onClick={abort}
+              variant="outline"
+              className="h-11 w-11 p-0 text-amber-400 border-amber-500/30"
+            >
+              <Square className="h-4 w-4 fill-current" />
+            </Button>
+          ) : (
+            <Button
+              onClick={handleSend}
+              disabled={!input.trim() || !isConnected}
+              className="h-11 w-11 p-0 bg-violet-600 hover:bg-violet-700 shrink-0"
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Settings Dialog */}
@@ -708,7 +632,7 @@ function MockChatInterface() {
         id: `msg-${Date.now() + 1}`,
         role: "assistant",
         content:
-          "Thanks for your question! This is a demo preview of the OpenClaw Pro interface. Connect to an OpenClaw Gateway for real AI-powered responses with persistent memory, tool execution, and business context awareness.\n\nConfigure the Gateway connection using the settings icon above.",
+          "This is a demo preview of OpenClaw Pro. Connect a local gateway in Settings for full autonomous capabilities.",
         timestamp: new Date().toISOString(),
       };
       setMessages((prev) => [...prev, aiResponse]);
@@ -717,31 +641,25 @@ function MockChatInterface() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-220px)] max-h-[700px]">
-      <div className="flex items-center gap-3 pb-4 border-b border-border">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-500/20">
-          <Bot className="h-5 w-5 text-violet-400" />
+    <div className="flex flex-col h-full">
+      <div className="flex items-center gap-3 p-4 border-b border-border bg-card/50 shrink-0">
+        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-500/20">
+          <Bot className="h-4 w-4 text-violet-400" />
         </div>
-        <div>
+        <div className="flex-1">
           <div className="flex items-center gap-2">
             <h3 className="font-semibold text-sm">OpenClaw Pro</h3>
             <Badge className="bg-amber-500/20 text-amber-400 border-0 text-[10px]">
               Demo
             </Badge>
           </div>
-          <p className="text-xs text-muted-foreground">
-            Demo mode — connect Gateway for real AI
-          </p>
-        </div>
-        <div className="ml-auto flex items-center gap-1.5">
-          <div className="h-2 w-2 rounded-full bg-amber-400" />
-          <span className="text-xs text-muted-foreground">Demo</span>
+          <p className="text-[10px] text-muted-foreground">Demo Mode</p>
         </div>
       </div>
 
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto py-4 space-y-4 scroll-smooth"
+        className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scroll-smooth"
       >
         {messages.map((msg) => (
           <ChatBubble key={msg.id} role={msg.role} content={msg.content} />
@@ -749,38 +667,23 @@ function MockChatInterface() {
         {isTyping && <TypingIndicator />}
       </div>
 
-      {messages.length <= 3 && (
-        <div className="pb-3">
-          <p className="text-xs text-muted-foreground mb-2">Try asking:</p>
-          <div className="flex flex-wrap gap-2">
-            {prompts[0].prompts.slice(0, 3).map((prompt) => (
-              <button
-                key={prompt}
-                onClick={() => setInput(prompt)}
-                className="text-xs bg-accent hover:bg-accent/80 rounded-full px-3 py-1.5 transition-colors text-muted-foreground hover:text-foreground"
-              >
-                {prompt}
-              </button>
-            ))}
-          </div>
+      <div className="p-4 border-t border-border bg-card/80 shrink-0">
+        <div className="flex gap-2">
+          <Input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
+            placeholder="Ask OpenClaw (demo)..."
+            className="flex-1 h-11 bg-background"
+          />
+          <Button
+            onClick={handleSend}
+            disabled={!input.trim() || isTyping}
+            className="h-11 w-11 p-0 bg-violet-600 hover:bg-violet-700"
+          >
+            <Send className="h-4 w-4" />
+          </Button>
         </div>
-      )}
-
-      <div className="flex gap-2 pt-3 border-t border-border">
-        <Input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-          placeholder="Ask OpenClaw anything (demo)..."
-          className="flex-1"
-        />
-        <Button
-          onClick={handleSend}
-          disabled={!input.trim() || isTyping}
-          className="bg-violet-600 hover:bg-violet-700 gap-2"
-        >
-          <Send className="h-4 w-4" />
-        </Button>
       </div>
     </div>
   );
@@ -916,9 +819,9 @@ export default function AIAgentPage() {
   useEffect(() => setIsClient(true), []);
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-4">
+    <div className="flex flex-col h-[calc(100dvh-80px)] md:h-auto md:space-y-6 -mx-4 -mt-20 md:mx-0 md:mt-0">
+      {/* Header — Hidden on mobile to save space, but kept for desktop */}
+      <div className="hidden md:flex items-center justify-between flex-wrap gap-4 px-4 md:px-0">
         <div>
           <div className="flex items-center gap-3 mb-1">
             <h1 className="text-3xl font-bold tracking-tight">
@@ -929,45 +832,44 @@ export default function AIAgentPage() {
             </Badge>
           </div>
           <p className="text-muted-foreground mt-1">
-            Your AI-powered content strategist and autonomous assistant,
-            backed by the OpenClaw runtime.
+            Your AI-powered content strategist.
           </p>
         </div>
       </div>
 
-      <Tabs defaultValue="chat">
-        <TabsList>
-          <TabsTrigger value="chat" className="gap-1.5">
+      <Tabs defaultValue="chat" className="flex-1 flex flex-col">
+        <TabsList className="md:inline-flex w-full md:w-auto grid grid-cols-3 rounded-none md:rounded-lg bg-accent/30 md:bg-muted p-1 h-12 md:h-10">
+          <TabsTrigger value="chat" className="gap-1.5 data-[state=active]:bg-card md:data-[state=active]:bg-background">
             <Bot className="h-4 w-4" />
-            Chat
+            <span className="text-xs md:text-sm">Chat</span>
           </TabsTrigger>
-          <TabsTrigger value="capabilities" className="gap-1.5">
+          <TabsTrigger value="capabilities" className="gap-1.5 data-[state=active]:bg-card md:data-[state=active]:bg-background">
             <Zap className="h-4 w-4" />
-            Capabilities
+            <span className="text-xs md:text-sm">Skills</span>
           </TabsTrigger>
-          <TabsTrigger value="upgrade" className="gap-1.5">
+          <TabsTrigger value="upgrade" className="gap-1.5 data-[state=active]:bg-card md:data-[state=active]:bg-background">
             <Crown className="h-4 w-4" />
-            Upgrade
+            <span className="text-xs md:text-sm">Pro</span>
           </TabsTrigger>
         </TabsList>
 
         {/* Chat Tab */}
-        <TabsContent value="chat">
-          <Card>
-            <CardContent className="p-4">
+        <TabsContent value="chat" className="flex-1 flex flex-col m-0 border-0 outline-none">
+          <Card className="flex-1 rounded-none md:rounded-xl border-x-0 md:border-x border-b-0 md:border-b shadow-none bg-transparent md:bg-card">
+            <CardContent className="p-0 md:p-4 h-full">
               {isClient ? <LiveChatInterface /> : <MockChatInterface />}
             </CardContent>
           </Card>
         </TabsContent>
 
         {/* Capabilities Tab */}
-        <TabsContent value="capabilities">
+        <TabsContent value="capabilities" className="px-4 py-4 md:px-0 overflow-y-auto">
           <CapabilitiesPanel />
         </TabsContent>
 
         {/* Upgrade Tab */}
-        <TabsContent value="upgrade" className="space-y-6">
-          <Card className="max-w-2xl border-violet-500/20">
+        <TabsContent value="upgrade" className="space-y-6 px-4 py-4 md:px-0 overflow-y-auto">
+          <Card className="max-w-2xl border-violet-500/20 mx-auto">
             <CardContent className="p-8 text-center space-y-6">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-violet-500/10 mx-auto">
                 <Crown className="h-8 w-8 text-violet-400" />

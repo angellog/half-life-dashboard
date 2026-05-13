@@ -63,63 +63,71 @@ const quickStats = [
 
 function DispatchView({ mode }: { mode: "business" | "personal" }) {
   return (
-    <div className="md:hidden space-y-4 pb-20">
+    <div className="md:hidden space-y-4 pb-24">
       {/* Active Status / Live Meter Mini */}
-      <Card className="bg-primary/5 border-primary/20">
+      <Card className="bg-primary/5 border-primary/20 shadow-none">
         <CardContent className="p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
+            <div className="h-2.5 w-2.5 rounded-full bg-green-400 animate-pulse" />
             <div>
-              <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">System Live</p>
-              <p className="text-sm font-bold">UGX 52,350 <span className="text-[10px] font-normal text-muted-foreground">meter</span></p>
+              <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">System Live</p>
+              <p className="text-base font-bold tabular-nums">UGX 52,350</p>
             </div>
           </div>
-          <Button size="sm" variant="outline" className="h-8 text-xs gap-1">
-            <Zap className="h-3 w-3" />
-            Boost
+          <Button size="sm" variant="outline" className="h-11 px-4 text-xs gap-2 font-bold ring-offset-background">
+            <Zap className="h-4 w-4 text-primary" />
+            BOOST
           </Button>
         </CardContent>
       </Card>
 
       {/* Grid for Crucial Parts */}
       <div className="grid grid-cols-2 gap-3">
-        <Card className="bg-card">
+        <Card className="bg-card shadow-none border-border/50">
           <CardContent className="p-4">
-            <Activity className="h-4 w-4 text-blue-400 mb-2" />
-            <p className="text-[10px] text-muted-foreground">Impressions</p>
-            <p className="text-lg font-bold">284.7K</p>
-            <p className="text-[10px] text-green-400">+12%</p>
+            <div className="h-8 w-8 rounded-lg bg-blue-500/10 flex items-center justify-center mb-3">
+               <Activity className="h-4 w-4 text-blue-400" />
+            </div>
+            <p className="text-[10px] text-muted-foreground font-bold uppercase">Reach</p>
+            <p className="text-xl font-black tabular-nums">284.7K</p>
+            <p className="text-[10px] text-green-400 font-bold mt-0.5">+12.5%</p>
           </CardContent>
         </Card>
-        <Card className="bg-card">
+        <Card className="bg-card shadow-none border-border/50">
           <CardContent className="p-4">
-            <MessageCircle className="h-4 w-4 text-green-400 mb-2" />
-            <p className="text-[10px] text-muted-foreground">Campaigns</p>
-            <p className="text-lg font-bold">3 Active</p>
-            <p className="text-[10px] text-muted-foreground">Next: 7 PM</p>
+            <div className="h-8 w-8 rounded-lg bg-green-500/10 flex items-center justify-center mb-3">
+               <MessageCircle className="h-4 w-4 text-green-400" />
+            </div>
+            <p className="text-[10px] text-muted-foreground font-bold uppercase">Campaigns</p>
+            <p className="text-xl font-black tabular-nums">3 Active</p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">Next: 7 PM</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Quick Action Dispatch */}
-      <div className="space-y-2">
-        <h3 className="text-xs font-bold uppercase text-muted-foreground px-1">Dispatch Queue</h3>
-        <Card>
+      <div className="space-y-3">
+        <div className="flex items-center justify-between px-1">
+          <h3 className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Dispatch Queue</h3>
+          <Badge variant="outline" className="text-[10px] h-5 py-0 border-primary/30 text-primary">Live Sync</Badge>
+        </div>
+        <Card className="shadow-none border-border/50">
           <CardContent className="p-0">
             {[
               { title: "Nike AF1 Drop", platform: "Instagram", time: "12:30 PM", color: "bg-pink-500" },
               { title: "Weekly News", platform: "WhatsApp", time: "2:00 PM", color: "bg-green-500" },
+              { title: "Competitor Audit", platform: "AI Agent", time: "4:15 PM", color: "bg-violet-500" },
             ].map((item, i) => (
-              <div key={i} className="flex items-center justify-between p-3 border-b last:border-0 border-border">
-                <div className="flex items-center gap-3">
-                  <div className={`h-1.5 w-1.5 rounded-full ${item.color}`} />
+              <div key={i} className="flex items-center justify-between p-4 border-b last:border-0 border-border/50 active:bg-accent/50 transition-colors">
+                <div className="flex items-center gap-4">
+                  <div className={`h-2 w-2 rounded-full ${item.color} shadow-[0_0_8px] ${item.color.replace('bg-', 'shadow-')}/50`} />
                   <div>
-                    <p className="text-sm font-medium">{item.title}</p>
-                    <p className="text-[10px] text-muted-foreground">{item.platform} • {item.time}</p>
+                    <p className="text-sm font-bold leading-none mb-1">{item.title}</p>
+                    <p className="text-[10px] text-muted-foreground font-medium">{item.platform} • {item.time}</p>
                   </div>
                 </div>
-                <Button size="icon" variant="ghost" className="h-8 w-8">
-                  <Send className="h-3 w-3" />
+                <Button size="icon" variant="ghost" className="h-10 w-10 rounded-full hover:bg-primary/10 hover:text-primary">
+                  <Send className="h-4 w-4" />
                 </Button>
               </div>
             ))}
@@ -128,21 +136,24 @@ function DispatchView({ mode }: { mode: "business" | "personal" }) {
       </div>
 
       {/* AI Strategist Mini */}
-      <Card className="bg-violet-600/10 border-violet-500/20">
+      <Card className="bg-violet-600/5 border-violet-500/20 shadow-none">
         <CardContent className="p-4">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="h-8 w-8 rounded-full bg-violet-600 flex items-center justify-center">
-              <Bot className="h-4 w-4 text-white" />
+          <div className="flex items-center gap-3 mb-4">
+            <div className="h-10 w-10 rounded-full bg-violet-600 shadow-lg shadow-violet-600/20 flex items-center justify-center">
+              <Bot className="h-5 w-5 text-white" />
             </div>
             <div>
-              <p className="text-xs font-bold">OpenClaw Pro</p>
-              <p className="text-[10px] text-muted-foreground">AI Strategist Online</p>
+              <p className="text-xs font-black uppercase tracking-tight">OpenClaw Pro</p>
+              <div className="flex items-center gap-1.5">
+                <div className="h-1.5 w-1.5 rounded-full bg-green-400" />
+                <p className="text-[10px] text-muted-foreground font-medium">Strategist Online</p>
+              </div>
             </div>
           </div>
           <div className="flex gap-2">
-            <Input placeholder="Ask AI..." className="h-8 text-xs bg-background/50" />
-            <Button size="sm" className="h-8 bg-violet-600 px-3">
-              <Send className="h-3 w-3" />
+            <Input placeholder="Message AI Strategist..." className="h-12 text-sm bg-background/50 border-border/50 px-4 rounded-xl" />
+            <Button size="icon" className="h-12 w-12 bg-violet-600 hover:bg-violet-700 shadow-lg shadow-violet-600/20 shrink-0 rounded-xl">
+              <Send className="h-4 w-4" />
             </Button>
           </div>
         </CardContent>

@@ -220,28 +220,29 @@ function AddPostDialog({ platform }: { platform: Platform }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         render={
-          <Button size="sm" className="gap-2">
+          <Button size="sm" className="h-11 md:h-9 px-4 md:px-3 gap-2">
             <Plus className="h-4 w-4" />
-            Add Content
+            <span className="hidden xs:inline">Add Content</span>
+            <span className="xs:hidden">Add</span>
           </Button>
         }
       />
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[500px] h-[92dvh] sm:h-auto flex flex-col p-0 gap-0">
+        <DialogHeader className="p-6 pb-2">
           <DialogTitle>New {PLATFORM_LABELS[platform]} Content</DialogTitle>
           <DialogDescription>
             Configure your {PLATFORM_LABELS[platform]} post for the pipeline.
           </DialogDescription>
         </DialogHeader>
-        <ScrollArea className="max-h-[80vh] px-1">
-          <div className="grid gap-5 py-4">
+        <ScrollArea className="flex-1 px-6">
+          <div className="grid gap-5 py-4 pb-10">
             <div className="grid gap-2">
               <Label htmlFor="caption">Content / Caption</Label>
               <textarea
                 id="caption"
                 value={formData.caption}
                 onChange={(e) => setFormData({ ...formData, caption: e.target.value })}
-                className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 placeholder={platform === "twitter" ? "What's happening?" : "Write your caption..."}
               />
             </div>
@@ -364,6 +365,7 @@ export default function SocialManagerPage() {
   const { activePlatform, setActivePlatform, posts } = useSocialMediaStore();
   const currentPosts = posts[activePlatform] || [];
   const [isSyncing, setIsSyncing] = useState(false);
+  const [activeColumn, setActiveColumn] = useState<PostStatus>("scheduled");
 
   const handleSync = () => {
     setIsSyncing(true);
@@ -374,16 +376,16 @@ export default function SocialManagerPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 -mx-4 md:mx-0 px-4 md:px-0">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Social Manager</h1>
-          <p className="text-muted-foreground mt-1">
-            Omni-channel content pipeline powered by Metricool.
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Social Manager</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Omni-channel content pipeline.
           </p>
         </div>
         
-        <div className="flex items-center gap-1.5 p-1.5 bg-accent/30 rounded-2xl border border-border/50">
+        <div className="flex items-center gap-1.5 p-1.5 bg-accent/30 rounded-2xl border border-border/50 overflow-x-auto no-scrollbar max-w-full">
           {PLATFORMS.map((p) => {
             const Icon = p.icon;
             const isActive = activePlatform === p.id;
@@ -392,7 +394,7 @@ export default function SocialManagerPage() {
                 key={p.id}
                 onClick={() => setActivePlatform(p.id)}
                 className={cn(
-                  "p-2.5 rounded-xl transition-all duration-200 flex items-center justify-center",
+                  "p-2.5 min-w-[44px] min-h-[44px] rounded-xl transition-all duration-200 flex items-center justify-center",
                   p.hover,
                   isActive 
                     ? "bg-background shadow-md scale-110 ring-1 ring-border" 
@@ -412,47 +414,79 @@ export default function SocialManagerPage() {
             size="sm" 
             onClick={handleSync}
             disabled={isSyncing}
-            className={cn(isSyncing && "bg-primary/5")}
+            className={cn("h-11 md:h-9 px-4 md:px-3 gap-2 border-primary/20", isSyncing && "bg-primary/5")}
            >
-              <RefreshCw className={cn("h-4 w-4 mr-2", isSyncing && "animate-spin text-primary")} /> 
+              <RefreshCw className={cn("h-4 w-4", isSyncing && "animate-spin text-primary")} /> 
               {isSyncing ? "Syncing..." : "Sync"}
            </Button>
            <AddPostDialog platform={activePlatform} />
         </div>
       </div>
 
-      <div className="h-px w-full bg-border opacity-50" />
+      <div className="h-px w-full bg-border opacity-50 hidden md:block" />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        {STATUS_COLUMNS.map((column) => {
-          const filteredPosts = currentPosts.filter(p => p.status === column.key);
-          return (
-            <div key={column.key} className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className={cn("h-2.5 w-2.5 rounded-full", column.color)} />
-                  <h3 className="font-semibold text-sm">{column.label}</h3>
-                  <span className="text-xs text-muted-foreground bg-accent rounded-full px-2 py-0.5">
-                    {filteredPosts.length}
-                  </span>
+      {/* Mobile Column Tabs */}
+      <div className="flex md:hidden items-center gap-1 p-1 bg-accent/50 rounded-lg border border-border sticky top-0 z-10 backdrop-blur-sm">
+        {STATUS_COLUMNS.map((col) => (
+          <button
+            key={col.key}
+            onClick={() => setActiveColumn(col.key)}
+            className={cn(
+              "flex-1 py-2 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all",
+              activeColumn === col.key
+                ? "bg-card text-foreground shadow-sm ring-1 ring-border"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {col.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Desktop Grid / Mobile Swipe */}
+      <div className="relative">
+        <div className={cn(
+          "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 transition-all duration-300",
+          "md:flex md:flex-row md:overflow-visible overflow-x-hidden"
+        )}>
+          {STATUS_COLUMNS.map((column) => {
+            const filteredPosts = currentPosts.filter(p => p.status === column.key);
+            const isHiddenOnMobile = activeColumn !== column.key;
+
+            return (
+              <div 
+                key={column.key} 
+                className={cn(
+                  "space-y-3 transition-opacity duration-300",
+                  isHiddenOnMobile ? "hidden md:block" : "block"
+                )}
+              >
+                <div className="flex items-center justify-between px-1">
+                  <div className="flex items-center gap-2">
+                    <div className={cn("h-2.5 w-2.5 rounded-full", column.color)} />
+                    <h3 className="font-semibold text-sm">{column.label}</h3>
+                    <span className="text-xs text-muted-foreground bg-accent rounded-full px-2 py-0.5">
+                      {filteredPosts.length}
+                    </span>
+                  </div>
                 </div>
+
+                <ScrollArea className="h-[calc(100vh-320px)] md:h-[calc(100vh-280px)]">
+                  <div className="space-y-3 pr-3">
+                    {filteredPosts.map((post) => (
+                      <PostCard key={post.id} post={post} platform={activePlatform} />
+                    ))}
+                    {filteredPosts.length === 0 && (
+                      <div className="flex flex-col items-center justify-center py-12 border border-dashed border-border rounded-xl opacity-40">
+                        <p className="text-[10px] font-medium uppercase tracking-widest text-center">No {column.label.toLowerCase()} content</p>
+                      </div>
+                    )}
+                  </div>
+                </ScrollArea>
               </div>
-
-              <ScrollArea className="h-[calc(100vh-280px)]">
-                <div className="space-y-3 pr-3">
-                  {filteredPosts.map((post) => (
-                    <PostCard key={post.id} post={post} platform={activePlatform} />
-                  ))}
-                  {filteredPosts.length === 0 && (
-                    <div className="flex flex-col items-center justify-center py-12 border border-dashed border-border rounded-xl opacity-40">
-                      <p className="text-[10px] font-medium uppercase tracking-widest">Empty</p>
-                    </div>
-                  )}
-                </div>
-              </ScrollArea>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );
