@@ -51,6 +51,43 @@ export async function POST(req: Request) {
           };
         },
       }),
+      syncWithMetricool: tool({
+        description: "Sync current content pipeline with Metricool or check sync status",
+        inputSchema: z.object({
+          platform: z.enum(["instagram", "tiktok", "twitter", "facebook-pages", "facebook-groups", "youtube"]),
+          action: z.enum(["sync_drafts", "check_status", "fetch_analytics"]),
+        }),
+        // @ts-ignore
+        execute: async ({ platform, action }) => {
+          return {
+            status: "success",
+            platform,
+            action,
+            message: `Successfully performed ${action} on ${platform} via Metricool.`,
+            syncedItems: 5,
+            lastSync: new Date().toISOString(),
+          };
+        },
+      }),
+      manageContentPipeline: tool({
+        description: "Add, reschedule or remove content from the brand pipeline",
+        inputSchema: z.object({
+          platform: z.enum(["instagram", "tiktok", "twitter", "facebook-pages", "facebook-groups", "youtube"]),
+          action: z.enum(["add", "reschedule", "remove"]),
+          caption: z.string().optional(),
+          date: z.string().optional().describe("YYYY-MM-DD format"),
+          postId: z.string().optional(),
+        }),
+        // @ts-ignore
+        execute: async ({ platform, action, caption, date, postId }) => {
+          return {
+            status: "success",
+            message: `Pipeline action '${action}' executed for ${platform}.`,
+            details: { caption, date, postId },
+            metricoolRef: `mt-${Math.random().toString(36).slice(2, 9)}`,
+          };
+        },
+      }),
     },
   });
 

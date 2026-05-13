@@ -11,6 +11,12 @@ export interface Post {
   scheduledDate?: string;
   publishedDate?: string;
   imageUrl?: string;
+  // Platform specific fields
+  hashtags?: string[];
+  isThread?: boolean;
+  videoDuration?: string;
+  link?: string;
+  metricoolStatus?: "synced" | "pending" | "error";
   engagement?: {
     likes: number;
     comments: number;

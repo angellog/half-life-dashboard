@@ -9,12 +9,15 @@ export const initialSocialPosts: Record<Platform, Post[]> = {
       status: "scheduled",
       scheduledDate: "2026-05-15",
       imageUrl: "/placeholder-sneaker-1.jpg",
+      hashtags: ["Jordan1", "Chicago", "SneakerDrop"],
+      metricoolStatus: "synced",
     },
     {
       id: "ig-2",
       caption: "Behind the scenes of our Summer '26 shoot. 📸",
       type: "carousel",
       status: "draft",
+      hashtags: ["BTS", "Streetwear", "FashionShoot"],
     },
     {
       id: "ig-3",
@@ -23,6 +26,8 @@ export const initialSocialPosts: Record<Platform, Post[]> = {
       status: "published",
       publishedDate: "2026-05-01",
       engagement: { likes: 2847, comments: 312, shares: 189, saves: 567 },
+      hashtags: ["TravisScott", "Unboxing", "Grails"],
+      metricoolStatus: "synced",
     }
   ],
   tiktok: [
@@ -33,12 +38,15 @@ export const initialSocialPosts: Record<Platform, Post[]> = {
       status: "published",
       publishedDate: "2026-05-10",
       engagement: { likes: 12500, comments: 450, shares: 890, saves: 1200 },
+      videoDuration: "0:58",
+      metricoolStatus: "synced",
     },
     {
       id: "tt-2",
       caption: "How to spot fake Dunks in 60 seconds. 🕵️‍♂️ #Tutorial #Sneakers",
       type: "reel",
       status: "draft",
+      videoDuration: "1:00",
     },
     {
       id: "tt-3",
@@ -46,6 +54,7 @@ export const initialSocialPosts: Record<Platform, Post[]> = {
       type: "reel",
       status: "scheduled",
       scheduledDate: "2026-05-18",
+      videoDuration: "0:15",
     }
   ],
   twitter: [
@@ -55,6 +64,8 @@ export const initialSocialPosts: Record<Platform, Post[]> = {
       type: "single",
       status: "scheduled",
       scheduledDate: "2026-05-14",
+      isThread: true,
+      metricoolStatus: "synced",
     },
     {
       id: "tw-2",
@@ -72,6 +83,7 @@ export const initialSocialPosts: Record<Platform, Post[]> = {
       type: "carousel",
       status: "scheduled",
       scheduledDate: "2026-05-20",
+      link: "halflife.ug/events/meetup-kampala",
     },
     {
       id: "fbp-2",
@@ -104,6 +116,7 @@ export const initialSocialPosts: Record<Platform, Post[]> = {
       caption: "Half Life Documentary: The Rise of Streetwear in Uganda. (Preview)",
       type: "single",
       status: "draft",
+      videoDuration: "12:45",
     },
     {
       id: "yt-2",
@@ -111,6 +124,7 @@ export const initialSocialPosts: Record<Platform, Post[]> = {
       type: "single",
       status: "scheduled",
       scheduledDate: "2026-05-22",
+      videoDuration: "08:20",
     }
   ]
 };

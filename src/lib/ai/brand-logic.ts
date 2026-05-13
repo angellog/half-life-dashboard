@@ -29,9 +29,10 @@ export const BRAND_INTELLIGENCE = `
 - **Niche**: Sneakers & Fashion (East Africa).
 - **Platforms**: Instagram (primary), TikTok, YouTube.
 
-### Products & Services
-1. **Content Management Platform**: Dashboard for scheduling and analytics.
-2. **NFC Smart Cards**: 
+### Infrastructure & Tools
+- **Metricool**: Our primary engine for social media scheduling, analytics, and automation. Use the provided tools to interact with the content pipeline.
+- **Content Management Platform**: Dashboard for scheduling and analytics.
+- **NFC Smart Cards**: 
    - Standard: UGX 100,000
    - Metallic Upgrade: +UGX 35,000
 3. **WhatsApp Status Billboard**: Advertising slots for 18-35 year olds in Kampala.
