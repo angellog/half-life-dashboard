@@ -18,103 +18,7 @@ import {
   FileText,
   ArrowUpRight,
 } from "lucide-react";
-
-const sections = [
-  {
-    title: "Social Manager",
-    description: "Manage content across all your social platforms",
-    href: "/social",
-    icon: Camera,
-    stat: "42 items",
-    statLabel: "in pipeline",
-    color: "text-pink-400",
-    bgColor: "bg-pink-500/10",
-  },
-  {
-    title: "Analytics",
-    description: "Track performance metrics and growth trends",
-    href: "/analytics",
-    icon: BarChart3,
-    stat: "284.7K",
-    statLabel: "impressions",
-    color: "text-blue-400",
-    bgColor: "bg-blue-500/10",
-  },
-  {
-    title: "Content Calendar",
-    description: "Plan and schedule content across platforms",
-    href: "/calendar",
-    icon: CalendarDays,
-    stat: "32 items",
-    statLabel: "this month",
-    color: "text-green-400",
-    bgColor: "bg-green-500/10",
-  },
-  {
-    title: "Competitor Tracker",
-    description: "Monitor competitor accounts and performance",
-    href: "/competitors",
-    icon: Users,
-    stat: "8 accounts",
-    statLabel: "tracked",
-    color: "text-orange-400",
-    bgColor: "bg-orange-500/10",
-  },
-  {
-    title: "News Feed",
-    description: "Latest sneaker & fashion industry news",
-    href: "/news",
-    icon: Newspaper,
-    stat: "22 articles",
-    statLabel: "today",
-    color: "text-purple-400",
-    bgColor: "bg-purple-500/10",
-  },
-  {
-    title: "NFC Card Store",
-    description: "Smart NFC business cards for your brand",
-    href: "/nfc-store",
-    icon: CreditCard,
-    stat: "UGX 100K",
-    statLabel: "from",
-    color: "text-amber-400",
-    bgColor: "bg-amber-500/10",
-    badge: "Coming Soon",
-  },
-  {
-    title: "Live Meter Billing",
-    description: "Usage-based subscription billing",
-    href: "/billing",
-    icon: Gauge,
-    stat: "Free",
-    statLabel: "current plan",
-    color: "text-emerald-400",
-    bgColor: "bg-emerald-500/10",
-    badge: "Coming Soon",
-  },
-  {
-    title: "WhatsApp Billboard",
-    description: "Status ad placement and campaigns",
-    href: "/whatsapp-billboard",
-    icon: MessageCircle,
-    stat: "0",
-    statLabel: "active campaigns",
-    color: "text-green-400",
-    bgColor: "bg-green-500/10",
-    badge: "Coming Soon",
-  },
-  {
-    title: "AI Agent",
-    description: "OpenClaw Pro — AI-powered consultancy",
-    href: "/ai-agent",
-    icon: Bot,
-    stat: "Pro",
-    statLabel: "feature",
-    color: "text-violet-400",
-    bgColor: "bg-violet-500/10",
-    badge: "Pro",
-  },
-];
+import { useSocialMediaStore } from "@/hooks/useSocialMediaStore";
 
 const quickStats = [
   {
@@ -148,6 +52,108 @@ const quickStats = [
 ];
 
 export default function DashboardHome() {
+  const { posts } = useSocialMediaStore();
+  
+  // Calculate total posts across all platforms
+  const totalSocialPosts = Object.values(posts).reduce((acc, platformPosts) => acc + platformPosts.length, 0);
+
+  const sections = [
+    {
+      title: "Social Manager",
+      description: "Manage content across all your social platforms",
+      href: "/social",
+      icon: Camera,
+      stat: `${totalSocialPosts} items`,
+      statLabel: "in pipeline",
+      color: "text-pink-400",
+      bgColor: "bg-pink-500/10",
+    },
+    {
+      title: "Analytics",
+      description: "Track performance metrics and growth trends",
+      href: "/analytics",
+      icon: BarChart3,
+      stat: "284.7K",
+      statLabel: "impressions",
+      color: "text-blue-400",
+      bgColor: "bg-blue-500/10",
+    },
+    {
+      title: "Content Calendar",
+      description: "Plan and schedule content across platforms",
+      href: "/calendar",
+      icon: CalendarDays,
+      stat: "32 items",
+      statLabel: "this month",
+      color: "text-green-400",
+      bgColor: "bg-green-500/10",
+    },
+    {
+      title: "Competitor Tracker",
+      description: "Monitor competitor accounts and performance",
+      href: "/competitors",
+      icon: Users,
+      stat: "8 accounts",
+      statLabel: "tracked",
+      color: "text-orange-400",
+      bgColor: "bg-orange-500/10",
+    },
+    {
+      title: "News Feed",
+      description: "Latest sneaker & fashion industry news",
+      href: "/news",
+      icon: Newspaper,
+      stat: "22 articles",
+      statLabel: "today",
+      color: "text-purple-400",
+      bgColor: "bg-purple-500/10",
+    },
+    {
+      title: "NFC Card Store",
+      description: "Smart NFC business cards for your brand",
+      href: "/nfc-store",
+      icon: CreditCard,
+      stat: "UGX 100K",
+      statLabel: "from",
+      color: "text-amber-400",
+      bgColor: "bg-amber-500/10",
+      badge: "Coming Soon",
+    },
+    {
+      title: "Live Meter Billing",
+      description: "Usage-based subscription billing",
+      href: "/billing",
+      icon: Gauge,
+      stat: "Free",
+      statLabel: "current plan",
+      color: "text-emerald-400",
+      bgColor: "bg-emerald-500/10",
+      badge: "Coming Soon",
+    },
+    {
+      title: "WhatsApp Billboard",
+      description: "Status ad placement and campaigns",
+      href: "/whatsapp-billboard",
+      icon: MessageCircle,
+      stat: "0",
+      statLabel: "active campaigns",
+      color: "text-green-400",
+      bgColor: "bg-green-500/10",
+      badge: "Coming Soon",
+    },
+    {
+      title: "AI Agent",
+      description: "OpenClaw Pro — AI-powered consultancy",
+      href: "/ai-agent",
+      icon: Bot,
+      stat: "Pro",
+      statLabel: "feature",
+      color: "text-violet-400",
+      bgColor: "bg-violet-500/10",
+      badge: "Pro",
+    },
+  ];
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -257,18 +263,6 @@ export default function DashboardHome() {
             <div className="divide-y divide-border">
               {[
                 {
-                  action: "Published",
-                  item: "NFC Smart Cards promo reel",
-                  time: "2 hours ago",
-                  platform: "Instagram",
-                },
-                {
-                  action: "Scheduled",
-                  item: "Jordan 1 Chicago Drop Reel",
-                  time: "4 hours ago",
-                  platform: "Instagram",
-                },
-                {
                   action: "Drafted",
                   actionColor: "bg-yellow-400",
                   item: "How to style Dunks tutorial",
@@ -303,7 +297,7 @@ export default function DashboardHome() {
                 >
                   <div className="flex items-center gap-3">
                     <div
-                      className={`h-2 w-2 rounded-full \${activity.actionColor}`}
+                      className={`h-2 w-2 rounded-full ${activity.actionColor}`}
                     />
                     <div>
                       <p className="text-sm">
