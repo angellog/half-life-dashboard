@@ -31,7 +31,7 @@ import {
   X,
 } from "lucide-react";
 import type { ChatMessage } from "@/types";
-import type { ChatHistoryMessage, ToolCallInfo } from "@/types/openclaw";
+import type { ToolCallInfo } from "@/types/openclaw";
 import { getSampleConversation, getSuggestedPrompts } from "@/lib/data/ai-agent";
 import { getSettings, saveSettings, clearSettings } from "@/lib/openclaw/settings";
 import { useOpenClaw } from "@/hooks/useOpenClaw";
@@ -178,6 +178,40 @@ function SettingsDialog({
     } catch (err) {
       setConnectError(err instanceof Error ? err.message : String(err));
     }
+  }
+
+  async function handleTest() {
+    setTesting(true);
+    setTestResult(null);
+    try {
+      const ws = new WebSocket(url);
+      const result = await new Promise<string>((resolve) => {
+        const timeout = setTimeout(() => {
+          ws.close();
+          resolve("Timeout — Gateway did not respond within 5 seconds");
+        }, 5000);
+        ws.onopen = () => {
+          clearTimeout(timeout);
+          ws.close();
+          resolve("Gateway is reachable");
+        };
+        ws.onerror = () => {
+          clearTimeout(timeout);
+          resolve("Cannot reach Gateway — check the URL and ensure it is running");
+        };
+      });
+      setTestResult(result);
+    } catch {
+      setTestResult("Connection test failed");
+    } finally {
+      setTesting(false);
+    }
+  }
+
+  function handleDisconnect() {
+    onDisconnect();
+    clearSettings();
+    onClose();
   }
 
   return (
@@ -339,14 +373,21 @@ function SettingsDialog({
 }
 
 // ================================================================
-// Live Chat Interface — connected to OpenClaw Gateway
+// Live Chat Interface — hybrid Gateway + Native
 // ================================================================
 
 function LiveChatInterface() {
-  const [mode, setMode] = useState<"gateway" | "native">(getSettings().mode || "native");
+  const [mode, setMode] = useState<"gateway" | "native">("native");
+  const [isLoaded, setIsLoaded] = useState(false);
   
   const gatewayApi = useOpenClaw();
   const nativeApi = useNativeAI();
+
+  useEffect(() => {
+    const settings = getSettings();
+    setMode(settings.mode || "native");
+    setIsLoaded(true);
+  }, []);
 
   const api = mode === "native" ? nativeApi : gatewayApi;
 
@@ -399,6 +440,8 @@ function LiveChatInterface() {
     setMode(newMode);
     saveSettings({ mode: newMode });
   }
+
+  if (!isLoaded) return null;
 
   return (
     <div className="flex flex-col h-[calc(100vh-220px)] max-h-[700px]">
@@ -626,241 +669,9 @@ function LiveChatInterface() {
     </div>
   );
 }
-  }, [messages, streamingText, activeToolCalls, isStreaming]);
-
-  function handleSend() {
-    if (!input.trim() || !isConnected) return;
-    sendMessage(input.trim());
-    setInput("");
-  }
-
-  function handlePromptClick(prompt: string) {
-    if (isConnected) {
-      sendMessage(prompt);
-    } else {
-      setInput(prompt);
-    }
-  }
-
-  return (
-    <div className="flex flex-col h-[calc(100vh-220px)] max-h-[700px]">
-      {/* Chat header */}
-      <div className="flex items-center gap-3 pb-4 border-b border-border">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-500/20">
-          <Bot className="h-5 w-5 text-violet-400" />
-        </div>
-        <div>
-          <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-sm">OpenClaw Pro</h3>
-            <Badge className="bg-violet-500/20 text-violet-400 border-0 text-[10px]">
-              {isConnected ? "Live" : "Offline"}
-            </Badge>
-            {serverVersion && (
-              <span className="text-[10px] text-muted-foreground">
-                v{serverVersion}
-              </span>
-            )}
-          </div>
-          <p className="text-xs text-muted-foreground">
-            {isConnected
-              ? "Connected to OpenClaw Gateway"
-              : "Not connected — configure Gateway to enable AI"}
-          </p>
-        </div>
-        <div className="ml-auto flex items-center gap-3">
-          {/* Memory status */}
-          {isConnected && memoryStatus && (
-            <div className="flex items-center gap-1.5">
-              <Brain className="h-3.5 w-3.5 text-muted-foreground" />
-              <span
-                className={cn(
-                  "text-[10px]",
-                  memoryStatus.available
-                    ? "text-green-400"
-                    : "text-muted-foreground"
-                )}
-              >
-                {memoryStatus.available ? "Memory active" : "No memory"}
-              </span>
-            </div>
-          )}
-
-          {/* Connection indicator */}
-          <div className="flex items-center gap-1.5">
-            <div
-              className={cn(
-                "h-2 w-2 rounded-full",
-                isConnected
-                  ? "bg-green-400"
-                  : isConnecting
-                    ? "bg-amber-400 animate-pulse"
-                    : "bg-red-400"
-              )}
-            />
-            <span className="text-xs text-muted-foreground">
-              {isConnected
-                ? "Online"
-                : isConnecting
-                  ? "Connecting..."
-                  : "Offline"}
-            </span>
-          </div>
-
-          {/* Settings button */}
-          <button
-            onClick={() => setSettingsOpen(true)}
-            className="text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <Settings className="h-4 w-4" />
-          </button>
-
-          {/* New topic button */}
-          {isConnected && (
-            <button
-              onClick={newSession}
-              className="text-muted-foreground hover:text-foreground transition-colors"
-              title="New Topic"
-            >
-              <Plus className="h-4 w-4" />
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Connection banner (when disconnected) */}
-      {!isConnected && !isConnecting && (
-        <div className="flex items-center gap-3 px-4 py-3 my-3 rounded-lg bg-amber-500/10 border border-amber-500/20">
-          <AlertCircle className="h-4 w-4 text-amber-400 shrink-0" />
-          <div className="flex-1">
-            <p className="text-xs text-amber-300">
-              Connect to an OpenClaw Gateway for real AI-powered responses.
-            </p>
-            {error && (
-              <p className="text-[10px] text-amber-400/70 mt-0.5">{error}</p>
-            )}
-          </div>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setSettingsOpen(true)}
-            className="text-xs shrink-0"
-          >
-            Configure
-          </Button>
-        </div>
-      )}
-
-      {/* Messages */}
-      <div
-        ref={scrollRef}
-        className="flex-1 overflow-y-auto py-4 space-y-4 scroll-smooth"
-      >
-        {/* Welcome message when empty and connected */}
-        {messages.length === 0 && isConnected && (
-          <div className="flex flex-col items-center justify-center h-full text-center py-12">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-violet-500/10 mb-4">
-              <Bot className="h-8 w-8 text-violet-400" />
-            </div>
-            <h3 className="text-lg font-semibold mb-1">
-              OpenClaw Pro is ready
-            </h3>
-            <p className="text-sm text-muted-foreground max-w-sm">
-              I&apos;m your AI business strategist for Half Life. Ask me about
-              content strategy, competitors, analytics, or anything else.
-            </p>
-          </div>
-        )}
-
-        {/* Chat history */}
-        {messages.map((msg, i) => (
-          <ChatBubble key={i} role={msg.role} content={msg.content} />
-        ))}
-
-        {/* Active tool calls */}
-        {activeToolCalls.length > 0 && (
-          <div className="space-y-2 pl-11">
-            {activeToolCalls.map((tool) => (
-              <ToolCallCard key={tool.id} tool={tool} />
-            ))}
-          </div>
-        )}
-
-        {/* Streaming text */}
-        {streamingText && <StreamingBubble text={streamingText} />}
-
-        {/* Typing indicator (streaming with no text yet) */}
-        {isStreaming && !streamingText && activeToolCalls.length === 0 && (
-          <TypingIndicator />
-        )}
-      </div>
-
-      {/* Suggested prompts */}
-      {messages.length === 0 && (
-        <div className="pb-3">
-          <p className="text-xs text-muted-foreground mb-2">Try asking:</p>
-          <div className="flex flex-wrap gap-2">
-            {prompts[0].prompts.slice(0, 3).map((prompt) => (
-              <button
-                key={prompt}
-                onClick={() => handlePromptClick(prompt)}
-                className="text-xs bg-accent hover:bg-accent/80 rounded-full px-3 py-1.5 transition-colors text-muted-foreground hover:text-foreground"
-              >
-                {prompt}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Input */}
-      <div className="flex gap-2 pt-3 border-t border-border">
-        <Input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-          placeholder={
-            isConnected
-              ? "Ask OpenClaw anything..."
-              : "Connect to Gateway to start chatting..."
-          }
-          disabled={!isConnected}
-          className="flex-1"
-        />
-        {isStreaming ? (
-          <Button
-            onClick={abort}
-            variant="outline"
-            className="gap-2 text-amber-400 border-amber-500/30 hover:bg-amber-500/10"
-          >
-            <Square className="h-3.5 w-3.5" />
-          </Button>
-        ) : (
-          <Button
-            onClick={handleSend}
-            disabled={!input.trim() || !isConnected}
-            className="bg-violet-600 hover:bg-violet-700 gap-2"
-          >
-            <Send className="h-4 w-4" />
-          </Button>
-        )}
-      </div>
-
-      {/* Settings Dialog */}
-      <SettingsDialog
-        open={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-        onConnect={connect}
-        onDisconnect={disconnect}
-        isConnected={isConnected}
-        isConnecting={isConnecting}
-      />
-    </div>
-  );
-}
 
 // ================================================================
 // Mock Chat Interface — fallback when Gateway is not available
-// (kept for demo / Vercel deployment)
 // ================================================================
 
 function MockChatInterface() {

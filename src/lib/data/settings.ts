@@ -77,7 +77,7 @@ export function getMockConnectedAccounts(): ConnectedAccount[] {
     },
     {
       id: "conn-5",
-      platform: "facebook",
+      platform: "facebook-pages",
       handle: "halflifekampala",
       displayName: "Half Life Kampala",
       connected: false,

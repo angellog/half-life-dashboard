@@ -15,7 +15,7 @@ export const calendarItems: CalendarItem[] = [
   { id: "cal-11", title: "Sneaker Storage Hacks", platform: "instagram", date: "2026-05-10", time: "12:00", status: "published", type: "reel" },
   { id: "cal-12", title: "Thrift Haul Owino Market", platform: "youtube", date: "2026-05-10", time: "17:00", status: "published", type: "video" },
   { id: "cal-13", title: "NB 550 vs Adidas Samba Debate", platform: "tiktok", date: "2026-05-12", time: "14:00", status: "scheduled", type: "short" },
-  { id: "cal-14", title: "Community Spotlight Post", platform: "facebook", date: "2026-05-12", time: "10:00", status: "scheduled", type: "post" },
+  { id: "cal-14", title: "Community Spotlight Post", platform: "facebook-pages", date: "2026-05-12", time: "10:00", status: "scheduled", type: "post" },
   { id: "cal-15", title: "Jordan 1 Chicago Reel", platform: "instagram", date: "2026-05-15", time: "10:00", status: "scheduled", type: "reel" },
   { id: "cal-16", title: "Summer Lookbook Launch", platform: "instagram", date: "2026-05-16", time: "12:00", status: "scheduled", type: "carousel" },
   { id: "cal-17", title: "Air Max Day Content", platform: "tiktok", date: "2026-05-17", time: "09:00", status: "scheduled", type: "short" },
@@ -27,12 +27,12 @@ export const calendarItems: CalendarItem[] = [
   { id: "cal-23", title: "East African Sneaker Culture", platform: "youtube", date: "2026-05-23", time: "12:00", status: "draft", type: "video" },
   { id: "cal-24", title: "Weekend Rotation", platform: "instagram", date: "2026-05-24", time: "09:00", status: "draft", type: "carousel" },
   { id: "cal-25", title: "Reseller Tips", platform: "tiktok", date: "2026-05-25", time: "16:00", status: "draft", type: "short" },
-  { id: "cal-26", title: "Community Q&A", platform: "facebook", date: "2026-05-26", time: "11:00", status: "draft", type: "live" },
+  { id: "cal-26", title: "Community Q&A", platform: "facebook-pages", date: "2026-05-26", time: "11:00", status: "draft", type: "live" },
   { id: "cal-27", title: "New Drop Alert", platform: "twitter", date: "2026-05-27", time: "08:00", status: "draft", type: "post" },
   { id: "cal-28", title: "Monthly Wrap-up Reel", platform: "instagram", date: "2026-05-28", time: "10:00", status: "draft", type: "reel" },
   { id: "cal-29", title: "June Preview", platform: "instagram", date: "2026-05-30", time: "12:00", status: "draft", type: "carousel" },
   { id: "cal-30", title: "Behind the Brand Ep. 4", platform: "youtube", date: "2026-05-30", time: "15:00", status: "draft", type: "video" },
-  { id: "cal-31", title: "Flash Sale Promo", platform: "facebook", date: "2026-05-31", time: "09:00", status: "draft", type: "post" },
+  { id: "cal-31", title: "Flash Sale Promo", platform: "facebook-pages", date: "2026-05-31", time: "09:00", status: "draft", type: "post" },
   { id: "cal-32", title: "Sneaker of the Month", platform: "tiktok", date: "2026-05-31", time: "14:00", status: "draft", type: "short" },
 ];
 

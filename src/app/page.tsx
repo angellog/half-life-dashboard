@@ -21,11 +21,11 @@ import {
 
 const sections = [
   {
-    title: "Instagram Manager",
-    description: "Manage scheduled, draft, and published content",
-    href: "/instagram",
+    title: "Social Manager",
+    description: "Manage content across all your social platforms",
+    href: "/social",
     icon: Camera,
-    stat: "16 posts",
+    stat: "42 items",
     statLabel: "in pipeline",
     color: "text-pink-400",
     bgColor: "bg-pink-500/10",
@@ -270,21 +270,31 @@ export default function DashboardHome() {
                 },
                 {
                   action: "Drafted",
-                  item: "Summer Lookbook Launch carousel",
+                  actionColor: "bg-yellow-400",
+                  item: "How to style Dunks tutorial",
                   time: "6 hours ago",
-                  platform: "Instagram",
+                  platform: "TikTok",
                 },
                 {
-                  action: "Tracked",
-                  item: "@hypebeast added to competitors",
-                  time: "1 day ago",
-                  platform: "System",
+                  action: "Scheduled",
+                  actionColor: "bg-blue-400",
+                  item: "Jordan 1 vs 4 debate thread",
+                  time: "8 hours ago",
+                  platform: "Twitter",
                 },
                 {
                   action: "Published",
-                  item: "Sneaker Cleaning Tips tutorial",
-                  time: "2 days ago",
-                  platform: "YouTube",
+                  actionColor: "bg-green-400",
+                  item: "Community Meetup announcement",
+                  time: "1 day ago",
+                  platform: "Facebook",
+                },
+                {
+                  action: "Tracked",
+                  actionColor: "bg-zinc-400",
+                  item: "@hypebeast added to competitors",
+                  time: "1 day ago",
+                  platform: "System",
                 },
               ].map((activity, i) => (
                 <div
@@ -293,15 +303,7 @@ export default function DashboardHome() {
                 >
                   <div className="flex items-center gap-3">
                     <div
-                      className={`h-2 w-2 rounded-full ${
-                        activity.action === "Published"
-                          ? "bg-green-400"
-                          : activity.action === "Scheduled"
-                          ? "bg-blue-400"
-                          : activity.action === "Drafted"
-                          ? "bg-yellow-400"
-                          : "bg-muted-foreground"
-                      }`}
+                      className={`h-2 w-2 rounded-full \${activity.actionColor}`}
                     />
                     <div>
                       <p className="text-sm">

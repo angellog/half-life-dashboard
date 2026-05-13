@@ -53,7 +53,7 @@ export interface TeamMember {
 // --- Connected Accounts (API Connections) ---
 export interface ConnectedAccount {
   id: string;
-  platform: "instagram" | "tiktok" | "youtube" | "twitter" | "facebook";
+  platform: "instagram" | "tiktok" | "youtube" | "twitter" | "facebook-pages" | "facebook-groups";
   handle: string;
   displayName: string;
   connected: boolean;

@@ -255,6 +255,11 @@ export default function BillingPage() {
                         ? "default"
                         : "outline"
                     }
+                    onClick={() => {
+                      if (tier.name !== "Standard") {
+                        alert(`Upgrading to \${tier.name} plan... Redirecting to payment gateway.`);
+                      }
+                    }}
                   >
                     {tier.name === "Standard" ? (
                       <>

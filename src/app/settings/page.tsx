@@ -632,7 +632,8 @@ const PLATFORM_META: Record<
   tiktok: { color: "text-cyan-400", bg: "bg-cyan-500/10", icon: "TT" },
   youtube: { color: "text-red-400", bg: "bg-red-500/10", icon: "YT" },
   twitter: { color: "text-blue-400", bg: "bg-blue-500/10", icon: "X" },
-  facebook: { color: "text-blue-500", bg: "bg-blue-600/10", icon: "FB" },
+  "facebook-pages": { color: "text-blue-500", bg: "bg-blue-600/10", icon: "FB" },
+  "facebook-groups": { color: "text-indigo-400", bg: "bg-indigo-600/10", icon: "FG" },
 };
 
 function ConnectionsSection() {

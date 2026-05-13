@@ -54,7 +54,8 @@ export type Platform =
   | "youtube"
   | "tiktok"
   | "twitter"
-  | "facebook";
+  | "facebook-pages"
+  | "facebook-groups";
 
 export interface CalendarItem {
   id: string;
@@ -71,7 +72,8 @@ export const PLATFORM_COLORS: Record<Platform, string> = {
   youtube: "#FF0000",
   tiktok: "#00F2EA",
   twitter: "#1DA1F2",
-  facebook: "#1877F2",
+  "facebook-pages": "#1877F2",
+  "facebook-groups": "#0866FF",
 };
 
 export const PLATFORM_LABELS: Record<Platform, string> = {
@@ -79,7 +81,8 @@ export const PLATFORM_LABELS: Record<Platform, string> = {
   youtube: "YouTube",
   tiktok: "TikTok",
   twitter: "X / Twitter",
-  facebook: "Facebook",
+  "facebook-pages": "FB Pages",
+  "facebook-groups": "FB Groups",
 };
 
 // --- Competitor Tracker ---

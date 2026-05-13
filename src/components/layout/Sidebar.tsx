@@ -24,7 +24,7 @@ import { UserMenu } from "@/components/auth/UserMenu";
 
 const navItems = [
   { title: "Dashboard", href: "/", icon: LayoutDashboard },
-  { title: "Instagram", href: "/instagram", icon: Camera },
+  { title: "Social Manager", href: "/social", icon: Camera },
   { title: "Analytics", href: "/analytics", icon: BarChart3 },
   { title: "Calendar", href: "/calendar", icon: CalendarDays },
   { title: "Competitors", href: "/competitors", icon: Users },

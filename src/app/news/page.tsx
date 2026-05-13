@@ -10,6 +10,7 @@ import {
   ExternalLink,
   Search,
   Newspaper,
+  RefreshCw,
 } from "lucide-react";
 import { NewsTopic, NEWS_TOPICS } from "@/types";
 import { getNewsByTopic } from "@/lib/data/news";
@@ -50,6 +51,16 @@ export default function NewsPage() {
       )
     : articles;
 
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleSync = () => {
+    setIsSyncing(true);
+    setTimeout(() => {
+      setIsSyncing(false);
+      alert("News feed updated with latest industry trends!");
+    }, 2000);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -60,6 +71,16 @@ export default function NewsPage() {
             Latest sneakers & fashion industry news from top sources.
           </p>
         </div>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="gap-2" 
+          onClick={handleSync}
+          disabled={isSyncing}
+        >
+          <RefreshCw className={cn("h-4 w-4", isSyncing && "animate-spin")} />
+          {isSyncing ? "Syncing..." : "Sync News"}
+        </Button>
       </div>
 
       {/* Search + Filters */}

@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { CalendarItem, Platform, PLATFORM_COLORS, PLATFORM_LABELS } from "@/types";
 import { getCalendarItems } from "@/lib/data/calendar";
 import {
@@ -35,7 +35,8 @@ const ALL_PLATFORMS: Platform[] = [
   "youtube",
   "tiktok",
   "twitter",
-  "facebook",
+  "facebook-pages",
+  "facebook-groups",
 ];
 
 export default function CalendarPage() {
@@ -92,6 +93,10 @@ export default function CalendarPage() {
             Plan and schedule content across all your platforms.
           </p>
         </div>
+        <Button className="gap-2" onClick={() => alert("Add Event Modal Coming Soon...")}>
+          <Plus className="h-4 w-4" />
+          Add Event
+        </Button>
       </div>
 
       {/* Platform Filters */}
