@@ -117,7 +117,6 @@ export default function DashboardHome() {
       statLabel: "from",
       color: "text-amber-400",
       bgColor: "bg-amber-500/10",
-      badge: "Coming Soon",
     },
     {
       title: "Live Meter Billing",
@@ -128,7 +127,6 @@ export default function DashboardHome() {
       statLabel: "current plan",
       color: "text-emerald-400",
       bgColor: "bg-emerald-500/10",
-      badge: "Coming Soon",
     },
     {
       title: "WhatsApp Billboard",
@@ -139,7 +137,6 @@ export default function DashboardHome() {
       statLabel: "active campaigns",
       color: "text-green-400",
       bgColor: "bg-green-500/10",
-      badge: "Coming Soon",
     },
     {
       title: "AI Agent",

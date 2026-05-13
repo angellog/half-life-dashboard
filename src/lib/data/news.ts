@@ -1,6 +1,8 @@
 import { NewsArticle } from "@/types";
+import scrapedNews from "./scraped_news.json";
 
-export const newsArticles: NewsArticle[] = [
+// Mock data as fallback/curated news
+const curatedNews: NewsArticle[] = [
   {
     id: "news-1",
     headline: "Nike x Off-White Collaboration Returns for Fall 2026 with Three New Silhouettes",
@@ -200,6 +202,28 @@ export const newsArticles: NewsArticle[] = [
     topic: "streetwear",
   },
 ];
+
+// Merge scraped news with curated news, filtering out duplicates by URL
+const allArticlesMap = new Map<string, NewsArticle>();
+
+// Add curated first
+curatedNews.forEach(article => allArticlesMap.set(article.url, article));
+
+// Add scraped news (will overwrite if URL matches, or add if new)
+(scrapedNews as any[]).forEach(article => {
+  allArticlesMap.set(article.url, {
+    id: article.id,
+    headline: article.headline,
+    source: article.source,
+    publishDate: article.publishDate,
+    summary: article.summary,
+    url: article.url,
+    topic: article.topic,
+  } as NewsArticle);
+});
+
+export const newsArticles: NewsArticle[] = Array.from(allArticlesMap.values())
+  .sort((a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime());
 
 export function getNewsArticles(): NewsArticle[] {
   return newsArticles;
